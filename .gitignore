@@ -9,3 +9,10 @@
 .DS_Store
 Thumbs.db
 .ai/
+_tmp_ib/
+designer_*.log
+rebuild_epf.bat
+test_*.bat
+test_*.ps1
+_probe.txt
+
