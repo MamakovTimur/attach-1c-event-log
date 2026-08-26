@@ -124,6 +124,28 @@
 			<ShowTitle>false</ShowTitle>
 			<ExtendedTooltip name="ГруппаНастройкиРасширеннаяПодсказка" id="13"/>
 			<ChildItems>
+				<CheckBoxField name="ВыполнятьНаСервере" id="75">
+					<DataPath>ВыполнятьНаСервере</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>На сервере 1С</v8:content>
+						</v8:item>
+					</Title>
+					<TitleLocation>Right</TitleLocation>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Файлы ЖР читаются и пишутся на сервере приложений (например Linux). Укажите пути так, как их видит сервер.</v8:content>
+						</v8:item>
+					</ToolTip>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="ВыполнятьНаСервереКонтекстноеМеню" id="76"/>
+					<ExtendedTooltip name="ВыполнятьНаСервереРасширеннаяПодсказка" id="77"/>
+					<Events>
+						<Event name="OnChange">ВыполнятьНаСервереПриИзменении</Event>
+					</Events>
+				</CheckBoxField>
 				<CheckBoxField name="СоздаватьРезервнуюКопию" id="14">
 					<DataPath>СоздаватьРезервнуюКопию</DataPath>
 					<Title>
@@ -339,6 +361,21 @@
 			<SavedData>true</SavedData>
 			<Save>
 				<Field>КаталогПриемника</Field>
+			</Save>
+		</Attribute>
+		<Attribute name="ВыполнятьНаСервере" id="12">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>На сервере 1С</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+			<SavedData>true</SavedData>
+			<Save>
+				<Field>ВыполнятьНаСервере</Field>
 			</Save>
 		</Attribute>
 		<Attribute name="СоздаватьРезервнуюКопию" id="4">
