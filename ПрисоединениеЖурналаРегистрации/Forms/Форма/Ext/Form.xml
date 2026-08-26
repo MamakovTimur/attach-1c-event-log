@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcssch="http://v8.1c.ru/8.1/data-composition-system/schema" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.17">
+	<Title>
+		<v8:item>
+			<v8:lang>ru</v8:lang>
+			<v8:content>Присоединение журнала регистрации</v8:content>
+		</v8:item>
+	</Title>
+	<Width>90</Width>
+	<Height>40</Height>
+	<AutoSaveDataInSettings>Use</AutoSaveDataInSettings>
+	<SaveDataInSettings>UseList</SaveDataInSettings>
+	<AutoCommandBar name="ФормаКоманднаяПанель" id="-1">
+		<Autofill>false</Autofill>
+	</AutoCommandBar>
+	<Events>
+		<Event name="OnCreateAtServer">ПриСозданииНаСервере</Event>
+		<Event name="OnOpen">ПриОткрытии</Event>
+	</Events>
+	<ChildItems>
+		<LabelDecoration name="Подсказка" id="1">
+			<AutoMaxWidth>false</AutoMaxWidth>
+			<Title formatted="false">
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Укажите каталог старого ЖР (кластер 1) и каталог текущего ЖР (кластер 2). Обычно это папки 1Cv8Log. Рекомендуется работать с копиями: склеить в копии нового журнала, затем при остановленном кластере подменить каталог на сервере.</v8:content>
+				</v8:item>
+			</Title>
+			<ContextMenu name="ПодсказкаКонтекстноеМеню" id="2"/>
+			<ExtendedTooltip name="ПодсказкаРасширеннаяПодсказка" id="3"/>
+		</LabelDecoration>
+		<UsualGroup name="ГруппаКаталоги" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Каталоги журнала</v8:content>
+				</v8:item>
+			</Title>
+			<Group>Vertical</Group>
+			<Representation>NormalSeparation</Representation>
+			<ShowTitle>true</ShowTitle>
+			<ExtendedTooltip name="ГруппаКаталогиРасширеннаяПодсказка" id="5"/>
+			<ChildItems>
+				<InputField name="КаталогИсточника" id="6">
+					<DataPath>КаталогИсточника</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Старый ЖР (кластер 1)</v8:content>
+						</v8:item>
+					</Title>
+					<AutoMaxWidth>false</AutoMaxWidth>
+					<ChoiceButton>true</ChoiceButton>
+					<ContextMenu name="КаталогИсточникаКонтекстноеМеню" id="7"/>
+					<ExtendedTooltip name="КаталогИсточникаРасширеннаяПодсказка" id="8"/>
+					<Events>
+						<Event name="StartChoice">КаталогИсточникаНачалоВыбора</Event>
+					</Events>
+				</InputField>
+				<InputField name="КаталогПриемника" id="9">
+					<DataPath>КаталогПриемника</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Текущий ЖР (кластер 2)</v8:content>
+						</v8:item>
+					</Title>
+					<AutoMaxWidth>false</AutoMaxWidth>
+					<ChoiceButton>true</ChoiceButton>
+					<ContextMenu name="КаталогПриемникаКонтекстноеМеню" id="10"/>
+					<ExtendedTooltip name="КаталогПриемникаРасширеннаяПодсказка" id="11"/>
+					<Events>
+						<Event name="StartChoice">КаталогПриемникаНачалоВыбора</Event>
+					</Events>
+				</InputField>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="ГруппаНастройки" id="12">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Настройки</v8:content>
+				</v8:item>
+			</Title>
+			<Group>AlwaysHorizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="ГруппаНастройкиРасширеннаяПодсказка" id="13"/>
+			<ChildItems>
+				<CheckBoxField name="СоздаватьРезервнуюКопию" id="14">
+					<DataPath>СоздаватьРезервнуюКопию</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Резервная копия 1Cv8.lgf</v8:content>
+						</v8:item>
+					</Title>
+					<TitleLocation>Right</TitleLocation>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="СоздаватьРезервнуюКопиюКонтекстноеМеню" id="15"/>
+					<ExtendedTooltip name="СоздаватьРезервнуюКопиюРасширеннаяПодсказка" id="16"/>
+				</CheckBoxField>
+				<InputField name="РежимКонфликта" id="17">
+					<DataPath>РежимКонфликта</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Если файл периода уже есть</v8:content>
+						</v8:item>
+					</Title>
+					<Width>20</Width>
+					<DropListButton>true</DropListButton>
+					<ChoiceButton>false</ChoiceButton>
+					<ListChoiceMode>true</ListChoiceMode>
+					<ContextMenu name="РежимКонфликтаКонтекстноеМеню" id="18"/>
+					<ExtendedTooltip name="РежимКонфликтаРасширеннаяПодсказка" id="19"/>
+				</InputField>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="ГруппаКоманды" id="20">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Команды</v8:content>
+				</v8:item>
+			</Title>
+			<Group>AlwaysHorizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="ГруппаКомандыРасширеннаяПодсказка" id="21"/>
+			<ChildItems>
+				<Button name="КнопкаАнализировать" id="22">
+					<Type>UsualButton</Type>
+					<DefaultButton>true</DefaultButton>
+					<CommandName>Form.Command.Анализировать</CommandName>
+					<ExtendedTooltip name="КнопкаАнализироватьРасширеннаяПодсказка" id="23"/>
+				</Button>
+				<Button name="КнопкаПрисоединить" id="24">
+					<Type>UsualButton</Type>
+					<CommandName>Form.Command.Присоединить</CommandName>
+					<ExtendedTooltip name="КнопкаПрисоединитьРасширеннаяПодсказка" id="25"/>
+				</Button>
+				<Button name="КнопкаВыбратьФайлы" id="26">
+					<Type>UsualButton</Type>
+					<CommandName>Form.Command.ВыбратьФайлы</CommandName>
+					<ExtendedTooltip name="КнопкаВыбратьФайлыРасширеннаяПодсказка" id="27"/>
+				</Button>
+				<Button name="КнопкаОтметитьВсе" id="28">
+					<Type>UsualButton</Type>
+					<CommandName>Form.Command.ОтметитьВсе</CommandName>
+					<ExtendedTooltip name="КнопкаОтметитьВсеРасширеннаяПодсказка" id="29"/>
+				</Button>
+				<Button name="КнопкаСнятьВсе" id="30">
+					<Type>UsualButton</Type>
+					<CommandName>Form.Command.СнятьВсе</CommandName>
+					<ExtendedTooltip name="КнопкаСнятьВсеРасширеннаяПодсказка" id="31"/>
+				</Button>
+			</ChildItems>
+		</UsualGroup>
+		<Table name="ФайлыЖурнала" id="32">
+			<Representation>List</Representation>
+			<ChangeRowSet>false</ChangeRowSet>
+			<ChangeRowOrder>false</ChangeRowOrder>
+			<HeightInTableRows>8</HeightInTableRows>
+			<AutoInsertNewRow>false</AutoInsertNewRow>
+			<EnableStartDrag>false</EnableStartDrag>
+			<EnableDrag>false</EnableDrag>
+			<DataPath>ФайлыЖурнала</DataPath>
+			<RowFilter xsi:nil="true"/>
+			<ContextMenu name="ФайлыЖурналаКонтекстноеМеню" id="33"/>
+			<AutoCommandBar name="ФайлыЖурналаКоманднаяПанель" id="34">
+				<Autofill>false</Autofill>
+			</AutoCommandBar>
+			<ExtendedTooltip name="ФайлыЖурналаРасширеннаяПодсказка" id="35"/>
+			<SearchStringAddition name="ФайлыЖурналаСтрокаПоиска" id="36">
+				<AdditionSource>
+					<Item>ФайлыЖурнала</Item>
+					<Type>SearchStringRepresentation</Type>
+				</AdditionSource>
+				<ContextMenu name="ФайлыЖурналаСтрокаПоискаКонтекстноеМеню" id="37"/>
+				<ExtendedTooltip name="ФайлыЖурналаСтрокаПоискаРасширеннаяПодсказка" id="38"/>
+			</SearchStringAddition>
+			<ViewStatusAddition name="ФайлыЖурналаСостояниеПросмотра" id="39">
+				<AdditionSource>
+					<Item>ФайлыЖурнала</Item>
+					<Type>ViewStatusRepresentation</Type>
+				</AdditionSource>
+				<ContextMenu name="ФайлыЖурналаСостояниеПросмотраКонтекстноеМеню" id="40"/>
+				<ExtendedTooltip name="ФайлыЖурналаСостояниеПросмотраРасширеннаяПодсказка" id="41"/>
+			</ViewStatusAddition>
+			<SearchControlAddition name="ФайлыЖурналаУправлениеПоиском" id="42">
+				<AdditionSource>
+					<Item>ФайлыЖурнала</Item>
+					<Type>SearchControl</Type>
+				</AdditionSource>
+				<ContextMenu name="ФайлыЖурналаУправлениеПоискомКонтекстноеМеню" id="43"/>
+				<ExtendedTooltip name="ФайлыЖурналаУправлениеПоискомРасширеннаяПодсказка" id="44"/>
+			</SearchControlAddition>
+			<ChildItems>
+				<CheckBoxField name="ФайлыЖурналаПометка" id="45">
+					<DataPath>ФайлыЖурнала.Пометка</DataPath>
+					<TitleLocation>None</TitleLocation>
+					<EditMode>EnterOnInput</EditMode>
+					<HeaderHorizontalAlign>Center</HeaderHorizontalAlign>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="ФайлыЖурналаПометкаКонтекстноеМеню" id="46"/>
+					<ExtendedTooltip name="ФайлыЖурналаПометкаРасширеннаяПодсказка" id="47"/>
+				</CheckBoxField>
+				<InputField name="ФайлыЖурналаИмяФайла" id="48">
+					<DataPath>ФайлыЖурнала.ИмяФайла</DataPath>
+					<ReadOnly>true</ReadOnly>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="ФайлыЖурналаИмяФайлаКонтекстноеМеню" id="49"/>
+					<ExtendedTooltip name="ФайлыЖурналаИмяФайлаРасширеннаяПодсказка" id="50"/>
+				</InputField>
+				<InputField name="ФайлыЖурналаДействие" id="51">
+					<DataPath>ФайлыЖурнала.Действие</DataPath>
+					<ReadOnly>true</ReadOnly>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="ФайлыЖурналаДействиеКонтекстноеМеню" id="52"/>
+					<ExtendedTooltip name="ФайлыЖурналаДействиеРасширеннаяПодсказка" id="53"/>
+				</InputField>
+				<InputField name="ФайлыЖурналаРазмерИсточника" id="54">
+					<DataPath>ФайлыЖурнала.РазмерИсточника</DataPath>
+					<ReadOnly>true</ReadOnly>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="ФайлыЖурналаРазмерИсточникаКонтекстноеМеню" id="55"/>
+					<ExtendedTooltip name="ФайлыЖурналаРазмерИсточникаРасширеннаяПодсказка" id="56"/>
+				</InputField>
+				<InputField name="ФайлыЖурналаРазмерПриемника" id="57">
+					<DataPath>ФайлыЖурнала.РазмерПриемника</DataPath>
+					<ReadOnly>true</ReadOnly>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="ФайлыЖурналаРазмерПриемникаКонтекстноеМеню" id="58"/>
+					<ExtendedTooltip name="ФайлыЖурналаРазмерПриемникаРасширеннаяПодсказка" id="59"/>
+				</InputField>
+			</ChildItems>
+		</Table>
+		<InputField name="ТекстПротокола" id="60">
+			<DataPath>ТекстПротокола</DataPath>
+			<ReadOnly>true</ReadOnly>
+			<AutoMaxWidth>false</AutoMaxWidth>
+			<Height>6</Height>
+			<MultiLine>true</MultiLine>
+			<ContextMenu name="ТекстПротоколаКонтекстноеМеню" id="61"/>
+			<ExtendedTooltip name="ТекстПротоколаРасширеннаяПодсказка" id="62"/>
+		</InputField>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Объект" id="1">
+			<Type>
+				<v8:Type>cfg:ExternalDataProcessorObject.ПрисоединениеЖурналаРегистрации</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+		</Attribute>
+		<Attribute name="КаталогИсточника" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Старый ЖР (кластер 1)</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+			<SavedData>true</SavedData>
+			<Save>
+				<Field>КаталогИсточника</Field>
+			</Save>
+		</Attribute>
+		<Attribute name="КаталогПриемника" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Текущий ЖР (кластер 2)</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+			<SavedData>true</SavedData>
+			<Save>
+				<Field>КаталогПриемника</Field>
+			</Save>
+		</Attribute>
+		<Attribute name="СоздаватьРезервнуюКопию" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Резервная копия 1Cv8.lgf</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+			<SavedData>true</SavedData>
+			<Save>
+				<Field>СоздаватьРезервнуюКопию</Field>
+			</Save>
+		</Attribute>
+		<Attribute name="РежимКонфликта" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Если файл периода уже есть</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>20</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+			<SavedData>true</SavedData>
+			<Save>
+				<Field>РежимКонфликта</Field>
+			</Save>
+		</Attribute>
+		<Attribute name="ТекстПротокола" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Протокол</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="НужнаПеренумерация" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Нужна перенумерация</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="ФайлыЖурнала" id="8">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Файлы журнала</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueTable</v8:Type>
+			</Type>
+			<Columns>
+				<Column name="Пометка" id="1">
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content> </v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:boolean</v8:Type>
+					</Type>
+				</Column>
+				<Column name="ИмяФайла" id="2">
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Файл</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>260</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="Действие" id="3">
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Действие</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>30</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="РазмерИсточника" id="4">
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Старый</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>20</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="РазмерПриемника" id="5">
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Текущий</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>20</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="ПолныйПутьИсточника" id="6">
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Путь источника</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="ПолныйПутьПриемника" id="7">
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Путь приёмника</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+			</Columns>
+		</Attribute>
+	</Attributes>
+	<Commands>
+		<Command name="Анализировать" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Проанализировать</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Найти файлы lgp и сопоставить словари lgf</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>Анализировать</Action>
+		</Command>
+		<Command name="Присоединить" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Присоединить</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Склеить словари и скопировать отмеченные файлы в текущий журнал</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>Присоединить</Action>
+		</Command>
+		<Command name="ВыбратьФайлы" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Выбрать файлы…</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Выбрать отдельные файлы .lgp вместо всего каталога</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ВыбратьФайлы</Action>
+		</Command>
+		<Command name="ОтметитьВсе" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Отметить все</v8:content>
+				</v8:item>
+			</Title>
+			<Action>ОтметитьВсе</Action>
+		</Command>
+		<Command name="СнятьВсе" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Снять все</v8:content>
+				</v8:item>
+			</Title>
+			<Action>СнятьВсе</Action>
+		</Command>
+	</Commands>
+</Form>

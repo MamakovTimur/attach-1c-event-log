@@ -1,0 +1,10 @@
+*.epf
+*.erf
+*.bak
+*.lgp
+*.lgf
+*.lgx
+*.tmp
+.DS_Store
+Thumbs.db
+.ai/
