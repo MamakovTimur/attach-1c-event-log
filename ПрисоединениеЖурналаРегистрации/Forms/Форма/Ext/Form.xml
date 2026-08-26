@@ -73,6 +73,43 @@
 						<Event name="StartChoice">КаталогПриемникаНачалоВыбора</Event>
 					</Events>
 				</InputField>
+				<UsualGroup name="ГруппаПоискКластера" id="63">
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Поиск в srvinfo</v8:content>
+						</v8:item>
+					</Title>
+					<Group>AlwaysHorizontal</Group>
+					<Representation>None</Representation>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="ГруппаПоискКластераРасширеннаяПодсказка" id="64"/>
+					<ChildItems>
+						<InputField name="ИмяИБ" id="65">
+							<DataPath>ИмяИБ</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>Имя ИБ (фильтр)</v8:content>
+								</v8:item>
+							</Title>
+							<Width>20</Width>
+							<AutoMaxWidth>false</AutoMaxWidth>
+							<ContextMenu name="ИмяИБКонтекстноеМеню" id="66"/>
+							<ExtendedTooltip name="ИмяИБРасширеннаяПодсказка" id="67"/>
+						</InputField>
+						<Button name="КнопкаНайтиВКластереИсточник" id="68">
+							<Type>UsualButton</Type>
+							<CommandName>Form.Command.НайтиВКластереИсточник</CommandName>
+							<ExtendedTooltip name="КнопкаНайтиВКластереИсточникРасширеннаяПодсказка" id="69"/>
+						</Button>
+						<Button name="КнопкаНайтиВКластереПриемник" id="70">
+							<Type>UsualButton</Type>
+							<CommandName>Form.Command.НайтиВКластереПриемник</CommandName>
+							<ExtendedTooltip name="КнопкаНайтиВКластереПриемникРасширеннаяПодсказка" id="71"/>
+						</Button>
+					</ChildItems>
+				</UsualGroup>
 			</ChildItems>
 		</UsualGroup>
 		<UsualGroup name="ГруппаНастройки" id="12">
@@ -92,13 +129,26 @@
 					<Title>
 						<v8:item>
 							<v8:lang>ru</v8:lang>
-							<v8:content>Резервная копия 1Cv8.lgf</v8:content>
+							<v8:content>Полная копия каталога приёмника</v8:content>
 						</v8:item>
 					</Title>
 					<TitleLocation>Right</TitleLocation>
 					<CheckBoxType>Auto</CheckBoxType>
 					<ContextMenu name="СоздаватьРезервнуюКопиюКонтекстноеМеню" id="15"/>
 					<ExtendedTooltip name="СоздаватьРезервнуюКопиюРасширеннаяПодсказка" id="16"/>
+				</CheckBoxField>
+				<CheckBoxField name="ПроверятьЦелостность" id="72">
+					<DataPath>ПроверятьЦелостность</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Проверка целостности</v8:content>
+						</v8:item>
+					</Title>
+					<TitleLocation>Right</TitleLocation>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="ПроверятьЦелостностьКонтекстноеМеню" id="73"/>
+					<ExtendedTooltip name="ПроверятьЦелостностьРасширеннаяПодсказка" id="74"/>
 				</CheckBoxField>
 				<InputField name="РежимКонфликта" id="17">
 					<DataPath>РежимКонфликта</DataPath>
@@ -295,7 +345,7 @@
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
-					<v8:content>Резервная копия 1Cv8.lgf</v8:content>
+					<v8:content>Полная копия каталога приёмника</v8:content>
 				</v8:item>
 			</Title>
 			<Type>
@@ -304,6 +354,59 @@
 			<SavedData>true</SavedData>
 			<Save>
 				<Field>СоздаватьРезервнуюКопию</Field>
+			</Save>
+		</Attribute>
+		<Attribute name="ПроверятьЦелостность" id="9">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Проверка целостности</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+			<SavedData>true</SavedData>
+			<Save>
+				<Field>ПроверятьЦелостность</Field>
+			</Save>
+		</Attribute>
+		<Attribute name="ИмяИБ" id="10">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Имя ИБ (фильтр)</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>150</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+			<SavedData>true</SavedData>
+			<Save>
+				<Field>ИмяИБ</Field>
+			</Save>
+		</Attribute>
+		<Attribute name="КаталогSrvinfo" id="11">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Каталог srvinfo</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+			<SavedData>true</SavedData>
+			<Save>
+				<Field>КаталогSrvinfo</Field>
 			</Save>
 		</Attribute>
 		<Attribute name="РежимКонфликта" id="5">
@@ -471,13 +574,13 @@
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
-					<v8:content>Проанализировать</v8:content>
+					<v8:content>Проанализировать (dry-run)</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
-					<v8:content>Найти файлы lgp и сопоставить словари lgf</v8:content>
+					<v8:content>План без записи: словари, объёмы, целостность, блокировки</v8:content>
 				</v8:item>
 			</ToolTip>
 			<Action>Анализировать</Action>
@@ -529,6 +632,36 @@
 				</v8:item>
 			</Title>
 			<Action>СнятьВсе</Action>
+		</Command>
+		<Command name="НайтиВКластереИсточник" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Найти старый ЖР…</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Найти 1Cv8Log в srvinfo по 1CV8Clst.lst</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>НайтиВКластереИсточник</Action>
+		</Command>
+		<Command name="НайтиВКластереПриемник" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Найти текущий ЖР…</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Найти 1Cv8Log в srvinfo по 1CV8Clst.lst</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>НайтиВКластереПриемник</Action>
 		</Command>
 	</Commands>
 </Form>
