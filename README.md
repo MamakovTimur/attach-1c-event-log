@@ -20,7 +20,7 @@
 ## Готовая обработка
 
 - Файл в репозитории: [ПрисоединениеЖурналаРегистрации.epf](ПрисоединениеЖурналаРегистрации.epf)
-- Релиз: [v1.3.0](https://github.com/MamakovTimur/attach-1c-event-log/releases/tag/v1.3.0) ([скачать](https://github.com/MamakovTimur/attach-1c-event-log/releases/download/v1.3.0/attach-1c-event-log.epf))
+- Релиз: [v1.3.1](https://github.com/MamakovTimur/attach-1c-event-log/releases/tag/v1.3.1) ([скачать](https://github.com/MamakovTimur/attach-1c-event-log/releases/download/v1.3.1/attach-1c-event-log.epf))
 
 Откройте EPF в 1С:Предприятие (**Файл → Открыть**). Безопасный режим должен быть **выключен** (нужен доступ к файлам). Регистрация в «Дополнительные отчеты и обработки» БСП поддерживается (`СведенияОВнешнейОбработке`).
 
