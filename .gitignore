@@ -11,6 +11,7 @@ Thumbs.db
 .ai/
 _tmp_ib/
 designer_*.log
+enterprise_*.log
 rebuild_epf.bat
 test_*.bat
 test_*.ps1
