@@ -59,6 +59,70 @@ def parse_number(token: str) -> int:
     return int(token) if token.isdigit() else 0
 
 
+def update_brackets(line: str, depth: int, in_quotes: bool) -> tuple[int, bool]:
+    i = 0
+    while i < len(line):
+        ch = line[i]
+        if in_quotes:
+            if ch == '"':
+                if i + 1 < len(line) and line[i + 1] == '"':
+                    i += 2
+                    continue
+                in_quotes = False
+        elif ch == '"':
+            in_quotes = True
+        elif ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+        i += 1
+    return depth, in_quotes
+
+
+def iter_lgf_records(lines: list[str]):
+    """Stream dictionary entries from lgf body (after header), including multiline."""
+    buffer = ""
+    depth = 0
+    in_quotes = False
+    for line in lines[2:]:
+        if depth == 0 and not buffer and not line.strip():
+            continue
+        if buffer:
+            buffer += "\n"
+        buffer += line
+        depth, in_quotes = update_brackets(line, depth, in_quotes)
+        if depth == 0 and buffer.strip():
+            yield buffer
+            buffer = ""
+
+
+def add_lgf_record(result: dict, record: str) -> None:
+    line = record.strip().rstrip(",")
+    if not (line.startswith("{") and line.endswith("}")):
+        return
+    tokens = tokenize(line[1:-1])
+    if len(tokens) < 3:
+        return
+    obj_type = parse_number(tokens[0])
+    number = parse_number(tokens[-1])
+    if obj_type < 1 or obj_type > 8 or number <= 0:
+        return
+    if obj_type in (1, 5) and len(tokens) >= 4:
+        uuid = unquote(tokens[1])
+        name = unquote(tokens[2])
+        key = (uuid or name).lower()
+    else:
+        uuid = ""
+        name = unquote(tokens[1])
+        key = name.lower()
+    if not key:
+        return
+    result["by_number"][obj_type][number] = {"type": obj_type, "number": number, "name": name, "uuid": uuid, "key": key}
+    result["by_key"][obj_type][key] = number
+    result["max_number"][obj_type] = max(result["max_number"][obj_type], number)
+    result["count"] += 1
+
+
 def read_lgf(path: Path) -> dict:
     raw = path.read_bytes()
     text = raw.decode("utf-8-sig", errors="strict")
@@ -77,31 +141,8 @@ def read_lgf(path: Path) -> dict:
         "count": 0,
     }
 
-    for line in lines[2:]:
-        line = line.strip().rstrip(",")
-        if not (line.startswith("{") and line.endswith("}")):
-            continue
-        tokens = tokenize(line[1:-1])
-        if len(tokens) < 3:
-            continue
-        obj_type = parse_number(tokens[0])
-        number = parse_number(tokens[-1])
-        if obj_type < 1 or obj_type > 8 or number <= 0:
-            continue
-        if obj_type in (1, 5) and len(tokens) >= 4:
-            uuid = unquote(tokens[1])
-            name = unquote(tokens[2])
-            key = (uuid or name).lower()
-        else:
-            uuid = ""
-            name = unquote(tokens[1])
-            key = name.lower()
-        if not key:
-            continue
-        result["by_number"][obj_type][number] = {"type": obj_type, "number": number, "name": name, "uuid": uuid, "key": key}
-        result["by_key"][obj_type][key] = number
-        result["max_number"][obj_type] = max(result["max_number"][obj_type], number)
-        result["count"] += 1
+    for record in iter_lgf_records(lines):
+        add_lgf_record(result, record)
     return result
 
 

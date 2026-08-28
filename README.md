@@ -20,7 +20,9 @@
 ## Готовая обработка
 
 - Файл в репозитории: [ПрисоединениеЖурналаРегистрации.epf](ПрисоединениеЖурналаРегистрации.epf)
-- Релиз: [v1.3.2](https://github.com/MamakovTimur/attach-1c-event-log/releases/tag/v1.3.2) ([скачать](https://github.com/MamakovTimur/attach-1c-event-log/releases/download/v1.3.2/attach-1c-event-log.epf))
+- Версия в сборке: **1.3.15** (индексы полей .lgp: Infostart 1-based минус 1). Раньше: 1.3.14 метки времени; 1.3.13 пакетный append; 1.3.12 порты; 1.3.11 LF.
+- Релиз: [v1.3.15](https://github.com/MamakovTimur/attach-1c-event-log/releases/tag/v1.3.15)
+- Предыдущий релиз: [v1.3.2](https://github.com/MamakovTimur/attach-1c-event-log/releases/tag/v1.3.2)
 
 Откройте EPF в 1С:Предприятие (**Файл → Открыть**). Безопасный режим должен быть **выключен** (нужен доступ к файлам). Регистрация в «Дополнительные отчеты и обработки» БСП поддерживается (`СведенияОВнешнейОбработке`).
 
