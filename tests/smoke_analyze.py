@@ -207,10 +207,22 @@ def analyze(src_dir: Path, dst_dir: Path) -> int:
     return 0
 
 
-def main() -> int:
+def default_fixture_dirs() -> tuple[Path, Path]:
+    repo = Path(__file__).resolve().parents[1]
+    src = repo / "tests" / "fixtures" / "jr_src"
+    dst = repo / "tests" / "fixtures" / "jr_dst"
+    if (src / "1Cv8.lgf").exists() and (dst / "1Cv8.lgf").exists():
+        return src, dst
+
     desktop = Path(r"C:\Users\mamak\OneDrive\Desktop")
-    src = Path(sys.argv[1]) if len(sys.argv) > 1 else desktop / "1"
-    dst = Path(sys.argv[2]) if len(sys.argv) > 2 else desktop / "2"
+    return desktop / "1", desktop / "2"
+
+
+def main() -> int:
+    if len(sys.argv) > 2:
+        src, dst = Path(sys.argv[1]), Path(sys.argv[2])
+    else:
+        src, dst = default_fixture_dirs()
     return analyze(src, dst)
 
 

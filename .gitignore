@@ -5,10 +5,17 @@
 *.lgp
 *.lgf
 *.lgx
+!tests/fixtures/**/*.lgp
+!tests/fixtures/**/*.lgf
 *.tmp
 .DS_Store
 Thumbs.db
 .ai/
+!.ai/roadmap-2026-08.md
+!.ai/project-knowledge.md
+!.ai/current-task.md
+!.ai/verification-фаза1.md
+!.ai/verification-фаза2.md
 _tmp_ib/
 designer_*.log
 enterprise_*.log

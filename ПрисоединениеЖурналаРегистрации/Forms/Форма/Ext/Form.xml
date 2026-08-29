@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcssch="http://v8.1c.ru/8.1/data-composition-system/schema" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.17">
 	<Title>
 		<v8:item>
@@ -47,6 +47,56 @@
 				</InputField>
 			</ChildItems>
 		</UsualGroup>
+		<UsualGroup name="ГруппаМастер" id="130">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Мастер</v8:content>
+				</v8:item>
+			</Title>
+			<Group>Vertical</Group>
+			<Representation>NormalSeparation</Representation>
+			<ShowTitle>true</ShowTitle>
+			<ExtendedTooltip name="ГруппаМастерРасширеннаяПодсказка" id="131"/>
+			<ChildItems>
+				<LabelField name="ТекстШагаМастера" id="132">
+					<DataPath>ТекстШагаМастера</DataPath>
+					<TitleLocation>None</TitleLocation>
+					<AutoMaxWidth>false</AutoMaxWidth>
+					<ContextMenu name="ТекстШагаМастераКонтекстноеМеню" id="133"/>
+					<ExtendedTooltip name="ТекстШагаМастераРасширеннаяПодсказка" id="134"/>
+				</LabelField>
+				<LabelDecoration name="ПодсказкаМастера" id="135">
+					<AutoMaxWidth>false</AutoMaxWidth>
+					<Title formatted="false">
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Шаг 1: укажите копии каталогов ЖР (не живой srvinfo). При необходимости восстановите приёмник из *.bak_…</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="ПодсказкаМастераКонтекстноеМеню" id="136"/>
+					<ExtendedTooltip name="ПодсказкаМастераРасширеннаяПодсказка" id="137"/>
+				</LabelDecoration>
+				<UsualGroup name="ГруппаКнопкиМастера" id="138">
+					<Group>AlwaysHorizontal</Group>
+					<Representation>None</Representation>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="ГруппаКнопкиМастераРасширеннаяПодсказка" id="139"/>
+					<ChildItems>
+						<Button name="КнопкаМастерНазад" id="140">
+							<Type>UsualButton</Type>
+							<CommandName>Form.Command.МастерНазад</CommandName>
+							<ExtendedTooltip name="КнопкаМастерНазадРасширеннаяПодсказка" id="141"/>
+						</Button>
+						<Button name="КнопкаМастерДалее" id="142">
+							<Type>UsualButton</Type>
+							<CommandName>Form.Command.МастерДалее</CommandName>
+							<ExtendedTooltip name="КнопкаМастерДалееРасширеннаяПодсказка" id="143"/>
+						</Button>
+					</ChildItems>
+				</UsualGroup>
+			</ChildItems>
+		</UsualGroup>
 		<LabelDecoration name="Подсказка" id="1">
 			<AutoMaxWidth>false</AutoMaxWidth>
 			<Title formatted="false">
@@ -83,8 +133,27 @@
 					<ContextMenu name="КаталогИсточникаКонтекстноеМеню" id="7"/>
 					<ExtendedTooltip name="КаталогИсточникаРасширеннаяПодсказка" id="8"/>
 					<Events>
+						<Event name="OnChange">КаталогИсточникаПриИзменении</Event>
 						<Event name="StartChoice">КаталогИсточникаНачалоВыбора</Event>
 					</Events>
+				</InputField>
+				<InputField name="КаталогSrvinfo" id="98">
+					<DataPath>КаталогSrvinfo</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Каталог srvinfo</v8:content>
+						</v8:item>
+					</Title>
+					<AutoMaxWidth>false</AutoMaxWidth>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Корень srvinfo или reg_XXXX кластера для поиска 1Cv8Log. Сохраняется между сеансами.</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ContextMenu name="КаталогSrvinfoКонтекстноеМеню" id="99"/>
+					<ExtendedTooltip name="КаталогSrvinfoРасширеннаяПодсказка" id="100"/>
 				</InputField>
 				<InputField name="КаталогПриемника" id="9">
 					<DataPath>КаталогПриемника</DataPath>
@@ -99,6 +168,7 @@
 					<ContextMenu name="КаталогПриемникаКонтекстноеМеню" id="10"/>
 					<ExtendedTooltip name="КаталогПриемникаРасширеннаяПодсказка" id="11"/>
 					<Events>
+						<Event name="OnChange">КаталогПриемникаПриИзменении</Event>
 						<Event name="StartChoice">КаталогПриемникаНачалоВыбора</Event>
 					</Events>
 				</InputField>
@@ -141,6 +211,19 @@
 				</UsualGroup>
 			</ChildItems>
 		</UsualGroup>
+		<LabelDecoration name="ПодсказкаРежимаСервера" id="101">
+			<Visible>false</Visible>
+			<AutoMaxWidth>false</AutoMaxWidth>
+			<TextColor>style:SpecialTextColor</TextColor>
+			<Title formatted="false">
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Режим «На сервере 1С»</v8:content>
+				</v8:item>
+			</Title>
+			<ContextMenu name="ПодсказкаРежимаСервераКонтекстноеМеню" id="102"/>
+			<ExtendedTooltip name="ПодсказкаРежимаСервераРасширеннаяПодсказка" id="103"/>
+		</LabelDecoration>
 		<UsualGroup name="ГруппаНастройки" id="12">
 			<Title>
 				<v8:item>
@@ -180,7 +263,7 @@
 					<Title>
 						<v8:item>
 							<v8:lang>ru</v8:lang>
-							<v8:content>Полная копия каталога приёмника</v8:content>
+							<v8:content>Резервная копия изменяемых файлов</v8:content>
 						</v8:item>
 					</Title>
 					<TitleLocation>Right</TitleLocation>
@@ -200,6 +283,44 @@
 					<CheckBoxType>Auto</CheckBoxType>
 					<ContextMenu name="ПроверятьЦелостностьКонтекстноеМеню" id="73"/>
 					<ExtendedTooltip name="ПроверятьЦелостностьРасширеннаяПодсказка" id="74"/>
+				</CheckBoxField>
+				<CheckBoxField name="ДедупликацияЗаписей" id="148">
+					<DataPath>ДедупликацияЗаписей</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Дедупликация записей</v8:content>
+						</v8:item>
+					</Title>
+					<TitleLocation>Right</TitleLocation>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>При объединении пропускать записи с тем же отпечатком (дата + ключевые поля), что уже есть в приёмнике. По умолчанию выключено.</v8:content>
+						</v8:item>
+					</ToolTip>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="ДедупликацияЗаписейКонтекстноеМеню" id="149"/>
+					<ExtendedTooltip name="ДедупликацияЗаписейРасширеннаяПодсказка" id="150"/>
+				</CheckBoxField>
+				<CheckBoxField name="РазбиватьИсточникПоДням" id="151">
+					<DataPath>РазбиватьИсточникПоДням</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Разбивать источник по дням</v8:content>
+						</v8:item>
+					</Title>
+					<TitleLocation>Right</TitleLocation>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Перед присоединением разложить записи источника по файлам YYYYMMDD000000.lgp. Незавершённые транзакции не режутся по границе суток.</v8:content>
+						</v8:item>
+					</ToolTip>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="РазбиватьИсточникПоДнямКонтекстноеМеню" id="152"/>
+					<ExtendedTooltip name="РазбиватьИсточникПоДнямРасширеннаяПодсказка" id="153"/>
 				</CheckBoxField>
 				<CheckBoxField name="РежимОтладки" id="81">
 					<DataPath>РежимОтладки</DataPath>
@@ -237,6 +358,9 @@
 					<ListChoiceMode>true</ListChoiceMode>
 					<ContextMenu name="РежимКонфликтаКонтекстноеМеню" id="18"/>
 					<ExtendedTooltip name="РежимКонфликтаРасширеннаяПодсказка" id="19"/>
+					<Events>
+						<Event name="OnChange">РежимКонфликтаПриИзменении</Event>
+					</Events>
 				</InputField>
 			</ChildItems>
 		</UsualGroup>
@@ -277,6 +401,16 @@
 					<Type>UsualButton</Type>
 					<CommandName>Form.Command.СнятьВсе</CommandName>
 					<ExtendedTooltip name="КнопкаСнятьВсеРасширеннаяПодсказка" id="31"/>
+				</Button>
+				<Button name="КнопкаВосстановитьИзРезервнойКопии" id="144">
+					<Type>UsualButton</Type>
+					<CommandName>Form.Command.ВосстановитьИзРезервнойКопии</CommandName>
+					<ExtendedTooltip name="КнопкаВосстановитьИзРезервнойКопииРасширеннаяПодсказка" id="145"/>
+				</Button>
+				<Button name="КнопкаСохранитьПротокол" id="146">
+					<Type>UsualButton</Type>
+					<CommandName>Form.Command.СохранитьПротокол</CommandName>
+					<ExtendedTooltip name="КнопкаСохранитьПротоколРасширеннаяПодсказка" id="147"/>
 				</Button>
 			</ChildItems>
 		</UsualGroup>
@@ -476,7 +610,7 @@
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
-					<v8:content>Полная копия каталога приёмника</v8:content>
+					<v8:content>Резервная копия изменяемых файлов</v8:content>
 				</v8:item>
 			</Title>
 			<Type>
@@ -630,6 +764,90 @@
 				<v8:Type>xs:boolean</v8:Type>
 			</Type>
 		</Attribute>
+		<Attribute name="АнализАктуален" id="116">
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="КэшКлючАнализа" id="117">
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="АдресСостоянияПрисоединения" id="118">
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="ШагМастера" id="119">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Шаг мастера</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>1</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="ТекстШагаМастера" id="120">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Текст шага мастера</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="ДедупликацияЗаписей" id="121">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Дедупликация записей</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+			<SavedData>true</SavedData>
+			<Save>
+				<Field>ДедупликацияЗаписей</Field>
+			</Save>
+		</Attribute>
+		<Attribute name="РазбиватьИсточникПоДням" id="122">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Разбивать источник по дням</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+			<SavedData>true</SavedData>
+			<Save>
+				<Field>РазбиватьИсточникПоДням</Field>
+			</Save>
+		</Attribute>
 		<Attribute name="ФайлыЖурнала" id="8">
 			<Title>
 				<v8:item>
@@ -677,7 +895,7 @@
 					<Type>
 						<v8:Type>xs:string</v8:Type>
 						<v8:StringQualifiers>
-							<v8:Length>30</v8:Length>
+							<v8:Length>60</v8:Length>
 							<v8:AllowedLength>Variable</v8:AllowedLength>
 						</v8:StringQualifiers>
 					</Type>
@@ -838,6 +1056,66 @@
 				</v8:item>
 			</ToolTip>
 			<Action>НайтиВКластереПриемник</Action>
+		</Command>
+		<Command name="ВосстановитьИзРезервнойКопии" id="8">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Восстановить из резервной копии…</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Найти каталоги *.bak_… рядом с приёмником и вернуть в него lgf/lgp</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ВосстановитьИзРезервнойКопии</Action>
+		</Command>
+		<Command name="СохранитьПротокол" id="9">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Сохранить протокол…</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Записать текст протокола в файл .txt или .log</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>СохранитьПротокол</Action>
+		</Command>
+		<Command name="МастерДалее" id="10">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Далее →</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Следующий шаг: копии → анализ → присоединение</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>МастерДалее</Action>
+		</Command>
+		<Command name="МастерНазад" id="11">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>← Назад</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Предыдущий шаг мастера</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>МастерНазад</Action>
 		</Command>
 	</Commands>
 </Form>
