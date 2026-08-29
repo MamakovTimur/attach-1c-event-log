@@ -1,30 +1,25 @@
-# Текущая задача: Фаза 2 — Качество merge
+# Текущая задача: hotfix 1.3.22 — форма не открывается
 
-**Статус:** выполнено (29.08.2026). Версия **1.3.21**.
+**Статус:** выполнено (30.08.2026). Версия **1.3.22**.
 
-Полный план: `.ai/roadmap-2026-08.md`.
+## Симптом
 
-## Чеклист Фазы 2
+Ошибка компиляции: `Новый Файл(ПутьLgf).Размер()` → «Неопознанный оператор», форма не открывается.
+
+## Исправление
+
+Два места в `Module.bsl` — промежуточный объект `Файл` перед `.Размер()`.
+Регрессионный тест: `tests/check_no_new_chained_calls.py`.
+
+## Чеклист
 
 | # | Задача | Статус |
 |---|--------|--------|
-| 1 | Дедупликация опциональная (флаг, default OFF) + тесты | ✅ |
-| 2 | Предупреждение/защита транзакций в dry-run + sticky day при split | ✅ |
-| 3 | Golden/synthetic fixtures + Python-тесты | ✅ |
-| 4 | Split по дню (MVP: «Разбивать источник по дням») | ✅ |
-| 5 | Архивный формат read-only detection | ✅ |
-| 6 | Версия 1.3.21: ObjectModule, `НомерВерсииОбработки()`, README, knowledge | ✅ |
-| 7 | Form.xml: реквизиты/флаги | ✅ |
-| 8 | syntaxcheck + duplicate names + unittest + smoke | ✅ (см. verification) |
-| 9 | Пересборка EPF | ✅ |
-
-## Изменённые файлы
-
-- `Forms/Форма/Ext/Form.xml` — флаги дедупликации и разбивки по дням
-- `Forms/Форма/Ext/Form/Module.bsl` — качество склейки Фазы 2
-- `Ext/ObjectModule.bsl` — версия 1.3.21
-- `tests/lgp_merge_quality.py`, `tests/test_merge_quality.py`, `tests/fixtures/golden/`
-- `README.md`, `.ai/*`, `.gitignore`
+| 1 | Найти и исправить все `Новый Файл(...).` | ✅ |
+| 2 | syntaxcheck + duplicate names + chained + unittest + smoke | ✅ |
+| 3 | Пересборка EPF | ✅ |
+| 4 | Commit + push + GitHub Release v1.3.22 | ⏳ |
+| 5 | Asset = `ПрисоединениеЖурналаРегистрации.epf` | ⏳ |
 
 ## Следующий шаг
 
