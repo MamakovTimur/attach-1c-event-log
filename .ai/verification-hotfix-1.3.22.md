@@ -23,7 +23,9 @@
 | `РазмерФайловЖРВКаталоге` (~2342) | `РазмерБайт + Новый Файл(ПутьLgf).Размер()` | `ФайлLgf = Новый Файл(...); РазмерБайт + ФайлLgf.Размер()` |
 | `ДописатьЗаписиLgpИзФайлаПострочно` (~3757) | `Новый Файл(ПутьИсточника).Размер()` | `ФайлИсточникаРазмер = Новый Файл(...); ...Размер()` |
 
-ObjectModule: только версия → `1.3.22`.
+ObjectModule: версия → `1.3.22`.
+
+Регрессия: `tests/check_no_new_chained_calls.py`.
 
 ## Доказательства
 
@@ -35,58 +37,30 @@ path: ПрисоединениеЖурналаРегистрации/
 result: No matches found
 ```
 
-### `tests/check_no_new_chained_calls.py`
+### `tests/check_no_new_chained_calls.py` → PASS (exit=0)
 
-```
-OK: no chained Новый in Module.bsl
-OK: no chained Новый in ObjectModule.bsl
-PASS: check_no_new_chained_calls
-exit=0
-```
+### `tests/check_duplicate_method_names.py` → OK: 247 unique declarations
 
-### `tests/check_duplicate_method_names.py`
+### syntaxcheck MCP (ObjectModule + Module q1–q4) → TOTAL errors=0
 
-```
-OK: 247 unique declarations in Module.bsl
-exit=0
-```
-
-### syntaxcheck MCP (ObjectModule + Module q1–q4)
-
-```
-ObjectModule.bsl: errors=0
-Module_q1: errors=0
-Module_q2: errors=0
-Module_q3: errors=0
-Module_q4: errors=0
-TOTAL errors=0
-```
-
-### unittest + smoke
-
-```
-Ran 13 tests ... OK
-SMOKE OK: analyze
-```
+### unittest → Ran 13 tests OK; smoke → SMOKE OK: analyze
 
 ### Designer / EPF
 
-- Команда: `1cv8 DESIGNER /LoadExternalDataProcessorOrReportFromFiles`
-- `designer_load.log`: «Загрузка завершена» (~1719 мс), без фатальных ошибок
-- Файл: `ПрисоединениеЖурналаРегистрации.epf`, размер ~48033 байт, время сборки 30.08.2026
+- `designer_load.log`: «Загрузка завершена», без фатальных ошибок
+- `ПрисоединениеЖурналаРегистрации.epf` пересобран (~48030 байт)
 
-### Версия синхронна
-
-- `ObjectModule.bsl` → `"1.3.22"`
-- `НомерВерсииОбработки()` → `"1.3.22"`
-- README / `.ai/project-knowledge.md` / `.ai/current-task.md`
+### Версия синхронна: ObjectModule / `НомерВерсииОбработки()` / README / knowledge = **1.3.22**
 
 ## Релиз
 
 - URL: https://github.com/MamakovTimur/attach-1c-event-log/releases/tag/v1.3.22
-- Asset: **ПрисоединениеЖурналаРегистрации.epf** (не `default.epf`)
-- Tag: `v1.3.22`
+- Commit: `49f956e` (+ rebuild EPF)
+- Asset: **`PrisoedinenieZhurnalaRegistratsii.epf`** (label: `ПрисоединениеЖурналаРегистрации.epf`)
+  - GitHub **не сохраняет** кириллицу в `name` ассета (превращает в `default.epf`) — поэтому имя латиницей, label кириллицей. В notes релиза есть инструкция переименовать после скачивания.
+- `default.epf` на v1.3.22 удалён.
+- v1.3.21: в notes добавлено предупреждение использовать 1.3.22; ассет там — `PrisoedinenieZhurnalaRegistratsii.epf` (не default).
 
 ## Вердикт
 
-**PASS** — hotfix готов к открытию формы в 1С.
+**PASS** — код компилируется, форма должна открываться; релиз опубликован.
