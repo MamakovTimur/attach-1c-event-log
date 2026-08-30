@@ -20,15 +20,16 @@
 ## Готовая обработка
 
 - Файл в репозитории: [ПрисоединениеЖурналаРегистрации.epf](ПрисоединениеЖурналаРегистрации.epf)
-- Версия в сборке: **1.3.22** (hotfix: нельзя писать `Новый Файл(...).Метод()` в одном выражении — форма не открывалась). Ранее: 1.3.21 — Фаза 2; 1.3.20 — UX Фаза 1; 1.3.19 — сессионное состояние; 1.3.11 LF.
-- Релиз: [v1.3.22](https://github.com/MamakovTimur/attach-1c-event-log/releases/tag/v1.3.22)
-- Предыдущий релиз: [v1.3.21](https://github.com/MamakovTimur/attach-1c-event-log/releases/tag/v1.3.21) / [v1.3.20](https://github.com/MamakovTimur/attach-1c-event-log/releases/tag/v1.3.20)
+- Версия в сборке: **1.3.23** (hotfix: `Функция` закрыта как `КонецПроцедуры` — форма не открывалась). Ранее: 1.3.22 — цепочки `Новый Файл(...).Метод()`; 1.3.21 — Фаза 2; 1.3.20 — UX Фаза 1; 1.3.19 — сессионное состояние; 1.3.11 LF.
+- Релиз: [v1.3.23](https://github.com/MamakovTimur/attach-1c-event-log/releases/tag/v1.3.23)
+- Предыдущий релиз: [v1.3.22](https://github.com/MamakovTimur/attach-1c-event-log/releases/tag/v1.3.22) / [v1.3.21](https://github.com/MamakovTimur/attach-1c-event-log/releases/tag/v1.3.21)
 
 Откройте EPF в 1С:Предприятие (**Файл → Открыть**). Безопасный режим должен быть **выключен** (нужен доступ к файлам). Регистрация в «Дополнительные отчеты и обработки» БСП поддерживается (`СведенияОВнешнейОбработке`).
 
 ## Быстрая проверка (без GUI)
 
 ```powershell
+python tests/check_bsl_block_balance.py
 python tests/check_duplicate_method_names.py
 python tests/check_no_new_chained_calls.py
 python -m unittest discover -s tests -p "test_*.py"
