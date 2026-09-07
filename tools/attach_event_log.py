@@ -225,11 +225,27 @@ def operation_request_signature(
     conflict: str,
     file_items: list[tuple[str, str | None]],
 ) -> dict[str, object]:
+    source_files: list[dict[str, object]] = []
+    for name, _ in file_items:
+        path = source / name
+        if path.exists():
+            stat = path.stat()
+            source_files.append(
+                {
+                    "name": name,
+                    "size_bytes": stat.st_size,
+                    "modified_ns": stat.st_mtime_ns,
+                }
+            )
+        else:
+            source_files.append({"name": name, "missing": True})
     return {
         "source": os.path.normcase(str(source.resolve())),
         "destination": os.path.normcase(str(destination.resolve())),
         "conflict": conflict,
         "files": [[name, action] for name, action in file_items],
+        "source_lgf_sha256": sha256_file(source / "1Cv8.lgf"),
+        "source_files": source_files,
     }
 
 
@@ -238,6 +254,32 @@ def state_string_list(state: dict[str, object], key: str) -> list[str]:
     if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
         raise ValueError(f"Некорректное поле {key!r} в журнале операции.")
     return list(value)
+
+
+def verify_source_file_unchanged(
+    request: dict[str, object],
+    name: str,
+    path: Path,
+) -> None:
+    snapshots = request.get("source_files")
+    if not isinstance(snapshots, list):
+        raise ValueError("В журнале операции отсутствует снимок файлов источника.")
+    expected = next(
+        (
+            item
+            for item in snapshots
+            if isinstance(item, dict) and item.get("name") == name
+        ),
+        None,
+    )
+    if expected is None or expected.get("missing") is True or not path.exists():
+        raise ValueError(f"Исходный файл изменился или исчез: {name}")
+    stat = path.stat()
+    if (
+        expected.get("size_bytes") != stat.st_size
+        or expected.get("modified_ns") != stat.st_mtime_ns
+    ):
+        raise ValueError(f"Исходный файл изменился во время операции: {name}")
 
 
 def state_rollback_path(
@@ -1139,17 +1181,6 @@ def required_free_space_bytes(
     return largest_temp + FREE_SPACE_MARGIN
 
 
-def make_lgf_rollback_copy(path: Path) -> Path:
-    rollback = make_output_temp(path)
-    try:
-        shutil.copy2(path, rollback)
-        return rollback
-    except OSError:
-        if rollback.exists():
-            rollback.unlink()
-        raise
-
-
 def finish_failed_attach(
     lgf_rollback: Path | None,
     lgf_destination: Path,
@@ -1232,13 +1263,13 @@ def attach_cmd(
         log("Нет файлов .lgp для присоединения.")
         return EXIT_VALIDATION
 
-    request_signature = operation_request_signature(
-        src_dir,
-        dst_dir,
-        conflict,
-        file_items,
-    )
     try:
+        request_signature = operation_request_signature(
+            src_dir,
+            dst_dir,
+            conflict,
+            file_items,
+        )
         operation_state = recover_operation_state(
             dst_dir,
             lgf_dst,
@@ -1341,6 +1372,7 @@ def attach_cmd(
 
     lgf_rollback: Path | None = None
     if operation_state is None:
+        rollback_ready = False
         operation_state = {
             "request": request_signature,
             "phase": "preparing",
@@ -1357,14 +1389,24 @@ def attach_cmd(
             write_operation_state(dst_dir, operation_state)
             if lgf_rollback is not None:
                 shutil.copy2(lgf_dst, lgf_rollback)
+                rollback_ready = True
             operation_state["phase"] = "prepared"
             write_operation_state(dst_dir, operation_state)
             append_rows_to_lgf(lgf_dst, maps_info["added_rows"], dst["newline"])
             operation_state["phase"] = "dictionary_ready"
             write_operation_state(dst_dir, operation_state)
         except OSError as e:
-            if lgf_rollback is not None and lgf_rollback.exists():
+            if (
+                rollback_ready
+                and lgf_rollback is not None
+                and lgf_rollback.exists()
+            ):
                 finish_failed_attach(lgf_rollback, lgf_dst, [])
+            elif lgf_rollback is not None:
+                try:
+                    lgf_rollback.unlink(missing_ok=True)
+                except OSError as cleanup_error:
+                    log(f"Не удалось удалить неполную резервную копию: {cleanup_error}")
             try:
                 remove_operation_state(dst_dir)
             except OSError as cleanup_error:
@@ -1397,6 +1439,7 @@ def attach_cmd(
         records_processed: int | None = None
         current_published = False
         try:
+            verify_source_file_unchanged(request_signature, name, src_path)
             operation_state["phase"] = "publishing"
             operation_state["current_file"] = {
                 "name": name,

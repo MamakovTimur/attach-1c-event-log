@@ -202,6 +202,149 @@ class PythonPreflightTests(unittest.TestCase):
             self.assertIn('"Evt2"', (destination / "1Cv8.lgf").read_text("utf-8-sig"))
             self.assertIn("Частичный результат", output.getvalue())
             self.assertIn(names[0], output.getvalue())
+            self.assertTrue(engine.operation_state_path(destination).exists())
+
+            first_result = (destination / names[0]).read_bytes()
+            resumed_output = io.StringIO()
+            with redirect_stdout(resumed_output):
+                resumed_result = engine.attach_cmd(
+                    source,
+                    destination,
+                    conflict="merge",
+                    files=",".join(names),
+                    files_from=None,
+                    dedup=False,
+                    split_by_day=False,
+                )
+
+            self.assertEqual(resumed_result, engine.EXIT_OK)
+            self.assertEqual((destination / names[0]).read_bytes(), first_result)
+            self.assertTrue((destination / names[1]).exists())
+            self.assertFalse(engine.operation_state_path(destination).exists())
+            self.assertIn(
+                "Продолжение незавершённой операции",
+                resumed_output.getvalue(),
+            )
+
+    def test_restart_restores_dictionary_before_first_publication(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            name = "20260101000000.lgp"
+            source, destination, _ = self.make_journals_with_new_event(Path(tmp))
+            original_lgf = (destination / "1Cv8.lgf").read_bytes()
+            rollback = destination / ".synthetic-lgf-rollback.tmp"
+            rollback.write_bytes(original_lgf)
+            (destination / "1Cv8.lgf").write_bytes(
+                (source / "1Cv8.lgf").read_bytes()
+            )
+            request = engine.operation_request_signature(
+                source,
+                destination,
+                "merge",
+                [(name, None)],
+            )
+            engine.write_operation_state(
+                destination,
+                {
+                    "request": request,
+                    "phase": "dictionary_ready",
+                    "rollback_file": rollback.name,
+                    "published_files": [],
+                    "completed_files": [],
+                    "uncertain_files": [],
+                    "current_file": None,
+                },
+            )
+
+            output = io.StringIO()
+            with redirect_stdout(output):
+                result = engine.attach_cmd(
+                    source,
+                    destination,
+                    conflict="merge",
+                    files=name,
+                    files_from=None,
+                    dedup=False,
+                    split_by_day=False,
+                )
+
+            self.assertEqual(result, engine.EXIT_OK)
+            self.assertTrue((destination / name).exists())
+            lgf_text = (destination / "1Cv8.lgf").read_text("utf-8-sig")
+            self.assertEqual(lgf_text.count('"Evt2"'), 1)
+            self.assertFalse(rollback.exists())
+            self.assertFalse(engine.operation_state_path(destination).exists())
+            self.assertIn("восстановлен исходный 1Cv8.lgf", output.getvalue())
+
+    def test_restart_blocks_uncertain_publication(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            name = "20260101000000.lgp"
+            source, destination, _ = self.make_journals_with_new_event(Path(tmp))
+            request = engine.operation_request_signature(
+                source,
+                destination,
+                "merge",
+                [(name, None)],
+            )
+            engine.write_operation_state(
+                destination,
+                {
+                    "request": request,
+                    "phase": "publishing",
+                    "rollback_file": None,
+                    "published_files": [],
+                    "completed_files": [],
+                    "uncertain_files": [],
+                    "current_file": {
+                        "name": name,
+                        "action": "copy",
+                        "destination_existed": False,
+                    },
+                },
+            )
+
+            output = io.StringIO()
+            with redirect_stdout(output):
+                result = engine.attach_cmd(
+                    source,
+                    destination,
+                    conflict="merge",
+                    files=name,
+                    files_from=None,
+                    dedup=False,
+                    split_by_day=False,
+                )
+
+            self.assertEqual(result, engine.EXIT_BUSY)
+            self.assertFalse((destination / name).exists())
+            self.assertTrue(engine.operation_state_path(destination).exists())
+            self.assertIn(
+                "Автоматическое продолжение заблокировано",
+                output.getvalue(),
+            )
+
+    def test_state_write_failure_cannot_replace_lgf_with_empty_reserve(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            source, destination, _ = self.make_journals_with_new_event(Path(tmp))
+            lgf_before = (destination / "1Cv8.lgf").read_bytes()
+
+            with mock.patch.object(
+                engine,
+                "write_operation_state",
+                side_effect=OSError("synthetic state write failure"),
+            ):
+                result = engine.attach_cmd(
+                    source,
+                    destination,
+                    conflict="merge",
+                    files="20260101000000.lgp",
+                    files_from=None,
+                    dedup=False,
+                    split_by_day=False,
+                )
+
+            self.assertEqual(result, engine.EXIT_BUSY)
+            self.assertEqual((destination / "1Cv8.lgf").read_bytes(), lgf_before)
+            self.assertFalse((destination / "20260101000000.lgp").exists())
 
     def test_invalid_report_extension_is_rejected_before_write(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
