@@ -219,6 +219,104 @@ def remove_operation_state(destination: Path) -> None:
     operation_state_path(destination).unlink(missing_ok=True)
 
 
+def operation_request_signature(
+    source: Path,
+    destination: Path,
+    conflict: str,
+    file_items: list[tuple[str, str | None]],
+) -> dict[str, object]:
+    return {
+        "source": os.path.normcase(str(source.resolve())),
+        "destination": os.path.normcase(str(destination.resolve())),
+        "conflict": conflict,
+        "files": [[name, action] for name, action in file_items],
+    }
+
+
+def state_string_list(state: dict[str, object], key: str) -> list[str]:
+    value = state.get(key, [])
+    if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
+        raise ValueError(f"Некорректное поле {key!r} в журнале операции.")
+    return list(value)
+
+
+def state_rollback_path(
+    destination: Path,
+    state: dict[str, object],
+) -> Path | None:
+    value = state.get("rollback_file")
+    if value is None:
+        return None
+    if not isinstance(value, str) or not value or Path(value).name != value:
+        raise ValueError("Некорректное имя резервной копии в журнале операции.")
+    return destination / value
+
+
+def recover_operation_state(
+    destination: Path,
+    lgf_destination: Path,
+    request: dict[str, object],
+) -> dict[str, object] | None:
+    """Recover only states whose publication outcome is unambiguous."""
+    state = read_operation_state(destination)
+    if state is None:
+        return None
+    if state.get("request") != request:
+        raise ValueError(
+            "Найдена незавершённая операция с другими параметрами. "
+            f"Проверьте {operation_state_path(destination)}."
+        )
+
+    phase = state.get("phase")
+    if not isinstance(phase, str):
+        raise ValueError("В журнале операции отсутствует корректная фаза.")
+    published = state_string_list(state, "published_files")
+    completed = state_string_list(state, "completed_files")
+    uncertain = state_string_list(state, "uncertain_files")
+    rollback = state_rollback_path(destination, state)
+
+    if phase == "complete":
+        if rollback is not None:
+            rollback.unlink(missing_ok=True)
+        remove_operation_state(destination)
+        log("Удалён журнал ранее завершённой операции.")
+        return None
+
+    if phase == "preparing":
+        if rollback is not None:
+            rollback.unlink(missing_ok=True)
+        remove_operation_state(destination)
+        log("Удалена незавершённая подготовка; данные приёмника не изменялись.")
+        return None
+
+    if phase == "publishing" or uncertain:
+        current = state.get("current_file")
+        current_name = current.get("name") if isinstance(current, dict) else "неизвестен"
+        raise ValueError(
+            "Операция прервалась в неоднозначный момент публикации LGP "
+            f"({current_name}). Автоматическое продолжение заблокировано; "
+            f"проверьте {operation_state_path(destination)}."
+        )
+
+    if not published and not completed:
+        if rollback is not None:
+            if not rollback.exists():
+                raise ValueError(
+                    "Не найдена резервная копия словаря из журнала операции: "
+                    f"{rollback}"
+                )
+            os.replace(rollback, lgf_destination)
+            log("После прерывания восстановлен исходный 1Cv8.lgf.")
+        remove_operation_state(destination)
+        return None
+
+    log(
+        "Продолжение незавершённой операции; уже опубликованы LGP: "
+        + ", ".join(published)
+    )
+    return state
+
+
 def copy_file_atomic(
     src: Path,
     dst: Path,
@@ -1134,6 +1232,33 @@ def attach_cmd(
         log("Нет файлов .lgp для присоединения.")
         return EXIT_VALIDATION
 
+    request_signature = operation_request_signature(
+        src_dir,
+        dst_dir,
+        conflict,
+        file_items,
+    )
+    try:
+        operation_state = recover_operation_state(
+            dst_dir,
+            lgf_dst,
+            request_signature,
+        )
+    except (OSError, ValueError) as e:
+        log(str(e))
+        return EXIT_BUSY
+    resumed_published = (
+        set(state_string_list(operation_state, "published_files"))
+        if operation_state is not None
+        else set()
+    )
+    resumed_completed = (
+        set(state_string_list(operation_state, "completed_files"))
+        if operation_state is not None
+        else set()
+    )
+    resumed_files = resumed_published | resumed_completed
+
     log("=== Начало присоединения (Python) ===")
     log(f"SRC: {src_dir}")
     log(f"DST: {dst_dir}")
@@ -1149,6 +1274,9 @@ def attach_cmd(
 
     plan: list[tuple[str, Path, Path, str]] = []
     for name, per_file in file_items:
+        if name in resumed_files:
+            log(f"Уже обработан до возобновления: {name}")
+            continue
         src_path = src_dir / name
         dst_path = dst_dir / name
         if not src_path.exists():
@@ -1169,6 +1297,21 @@ def attach_cmd(
             return EXIT_BUSY
         plan.append((name, src_path, dst_path, action))
 
+    if not plan and operation_state is not None:
+        operation_state["phase"] = "complete"
+        operation_state["current_file"] = None
+        try:
+            write_operation_state(dst_dir, operation_state)
+            rollback = state_rollback_path(dst_dir, operation_state)
+            if rollback is not None:
+                rollback.unlink(missing_ok=True)
+            remove_operation_state(dst_dir)
+        except (OSError, ValueError) as e:
+            log(f"Не удалось завершить журнал операции: {e}")
+            return EXIT_BUSY
+        log("Все выбранные LGP уже были опубликованы предыдущим запуском.")
+        log("ATTACH OK")
+        return EXIT_OK
     if not plan:
         log("Нет файлов .lgp, требующих присоединения.")
         return EXIT_VALIDATION
@@ -1197,15 +1340,43 @@ def attach_cmd(
         return EXIT_BUSY
 
     lgf_rollback: Path | None = None
-    try:
-        if maps_info["added_rows"]:
-            lgf_rollback = make_lgf_rollback_copy(lgf_dst)
-        append_rows_to_lgf(lgf_dst, maps_info["added_rows"], dst["newline"])
-    except OSError as e:
-        if lgf_rollback is not None:
-            finish_failed_attach(lgf_rollback, lgf_dst, [])
-        log(f"Не удалось обновить словарь: {e}")
-        return EXIT_BUSY
+    if operation_state is None:
+        operation_state = {
+            "request": request_signature,
+            "phase": "preparing",
+            "rollback_file": None,
+            "published_files": [],
+            "completed_files": [],
+            "uncertain_files": [],
+            "current_file": None,
+        }
+        try:
+            if maps_info["added_rows"]:
+                lgf_rollback = make_output_temp(lgf_dst)
+                operation_state["rollback_file"] = lgf_rollback.name
+            write_operation_state(dst_dir, operation_state)
+            if lgf_rollback is not None:
+                shutil.copy2(lgf_dst, lgf_rollback)
+            operation_state["phase"] = "prepared"
+            write_operation_state(dst_dir, operation_state)
+            append_rows_to_lgf(lgf_dst, maps_info["added_rows"], dst["newline"])
+            operation_state["phase"] = "dictionary_ready"
+            write_operation_state(dst_dir, operation_state)
+        except OSError as e:
+            if lgf_rollback is not None and lgf_rollback.exists():
+                finish_failed_attach(lgf_rollback, lgf_dst, [])
+            try:
+                remove_operation_state(dst_dir)
+            except OSError as cleanup_error:
+                log(f"Не удалось удалить журнал операции: {cleanup_error}")
+            log(f"Не удалось подготовить операцию или обновить словарь: {e}")
+            return EXIT_BUSY
+    else:
+        try:
+            lgf_rollback = state_rollback_path(dst_dir, operation_state)
+        except ValueError as e:
+            log(str(e))
+            return EXIT_BUSY
 
     if maps_info["added_rows"]:
         log(f"В 1Cv8.lgf добавлено записей: {len(maps_info['added_rows'])}")
@@ -1213,7 +1384,8 @@ def attach_cmd(
         log("Словарь приёмника уже содержит все объекты источника.")
 
     processed = 0
-    published_files: list[str] = []
+    published_files = state_string_list(operation_state, "published_files")
+    completed_files = state_string_list(operation_state, "completed_files")
     file_results: list[dict[str, object]] = []
     for name, src_path, dst_path, action in plan:
         if file_locked(dst_path):
@@ -1225,6 +1397,13 @@ def attach_cmd(
         records_processed: int | None = None
         current_published = False
         try:
+            operation_state["phase"] = "publishing"
+            operation_state["current_file"] = {
+                "name": name,
+                "action": action,
+                "destination_existed": dst_path.exists(),
+            }
+            write_operation_state(dst_dir, operation_state)
             if action in ("replace", "copy"):
                 if need_remap:
                     records_processed = rewrite_lgp_renumber(
@@ -1293,11 +1472,40 @@ def attach_cmd(
         except (OSError, ValueError) as e:
             if current_published:
                 published_files.append(name)
+                operation_state["uncertain_files"] = [name]
+            operation_state["phase"] = "partial"
+            operation_state["current_file"] = None
+            operation_state["published_files"] = published_files
+            operation_state["completed_files"] = completed_files
+            operation_state["last_error"] = str(e)
+            try:
+                write_operation_state(dst_dir, operation_state)
+            except OSError as state_error:
+                log(f"Не удалось обновить журнал операции: {state_error}")
             log(f"Ошибка записи {name}: {e}")
             finish_failed_attach(lgf_rollback, lgf_dst, published_files)
+            if not published_files and (
+                lgf_rollback is None or not lgf_rollback.exists()
+            ):
+                try:
+                    remove_operation_state(dst_dir)
+                except OSError as cleanup_error:
+                    log(f"Не удалось удалить журнал операции: {cleanup_error}")
             return EXIT_BUSY
         if current_published:
             published_files.append(name)
+        completed_files.append(name)
+        operation_state["phase"] = "file_completed"
+        operation_state["current_file"] = None
+        operation_state["published_files"] = published_files
+        operation_state["completed_files"] = completed_files
+        operation_state["uncertain_files"] = []
+        try:
+            write_operation_state(dst_dir, operation_state)
+        except OSError as e:
+            log(f"LGP опубликован, но журнал операции не обновлён: {e}")
+            finish_failed_attach(lgf_rollback, lgf_dst, published_files)
+            return EXIT_BUSY
         file_results.append(result)
         records_text = (
             str(records_processed)
@@ -1331,11 +1539,16 @@ def attach_cmd(
                 "Присоединение завершено, но итоговый JSON-отчёт "
                 f"не удалось сохранить: {e}"
             )
-    if lgf_rollback is not None:
-        try:
+    operation_state["phase"] = "complete"
+    operation_state["current_file"] = None
+    try:
+        write_operation_state(dst_dir, operation_state)
+        if lgf_rollback is not None:
             lgf_rollback.unlink(missing_ok=True)
-        except OSError as e:
-            log(f"Не удалось удалить резервную копию 1Cv8.lgf: {e}")
+        remove_operation_state(dst_dir)
+    except OSError as e:
+        log(f"Не удалось завершить журнал операции: {e}")
+        return EXIT_BUSY
     log("=== Конец присоединения (Python) ===")
     log("ATTACH OK")
     return EXIT_OK
