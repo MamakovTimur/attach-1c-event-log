@@ -32,6 +32,8 @@ EXIT_VALIDATION = 1
 EXIT_BUSY = 2
 MIB = 1024 * 1024
 FREE_SPACE_MARGIN = 64 * MIB
+OPERATION_STATE_NAME = ".attach-event-log.operation.json"
+OPERATION_STATE_SCHEMA = 1
 
 HEADER_MARKER = "1CV8LOG"
 UUID_TYPES = frozenset({1, 5})
@@ -179,14 +181,42 @@ def write_json_atomic(path: Path, value: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temp = make_output_temp(path)
     try:
-        temp.write_text(
-            json.dumps(value, ensure_ascii=False, indent=2) + "\n",
-            encoding="utf-8",
-        )
+        payload = json.dumps(value, ensure_ascii=False, indent=2) + "\n"
+        with temp.open("w", encoding="utf-8", newline="\n") as stream:
+            stream.write(payload)
+            stream.flush()
+            os.fsync(stream.fileno())
         os.replace(temp, path)
     finally:
         if temp.exists():
             temp.unlink()
+
+
+def operation_state_path(destination: Path) -> Path:
+    return destination / OPERATION_STATE_NAME
+
+
+def write_operation_state(destination: Path, state: dict[str, object]) -> None:
+    state["schema_version"] = OPERATION_STATE_SCHEMA
+    state["updated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    write_json_atomic(operation_state_path(destination), state)
+
+
+def read_operation_state(destination: Path) -> dict[str, object] | None:
+    path = operation_state_path(destination)
+    if not path.exists():
+        return None
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as e:
+        raise ValueError(f"Повреждён журнал незавершённой операции {path}: {e}") from e
+    if not isinstance(value, dict) or value.get("schema_version") != OPERATION_STATE_SCHEMA:
+        raise ValueError(f"Неподдерживаемый формат журнала операции: {path}")
+    return value
+
+
+def remove_operation_state(destination: Path) -> None:
+    operation_state_path(destination).unlink(missing_ok=True)
 
 
 def copy_file_atomic(
