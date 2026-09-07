@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-09-07T17:13:32.095586+00:00",
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10",
+    "engine": "tools\\attach_event_log.py",
+    "engine_sha256": "7a2935a6f7df4236a29c4ee7823749305be466af7cf47ffee06b2c941c7f8186"
+  },
+  "results": [
+    {
+      "size_mib": 100.0,
+      "input_bytes": 104857680,
+      "records": 1205260,
+      "scenario": "remap",
+      "iteration": 1,
+      "mode": "attach",
+      "elapsed_seconds": 13.479822,
+      "throughput_mib_s": 7.419,
+      "peak_rss_mib": 26.273
+    }
+  ]
+}

@@ -477,97 +477,89 @@ def append_rows_to_lgf(path: Path, rows: list[str], newline: str) -> None:
     write_text_utf8(path, nl.join(lines) + nl)
 
 
-def collect_flat_and_breaks(buffer: str) -> tuple[str, list[tuple[int, str]]]:
-    flat_chars: list[str] = []
-    breaks: list[tuple[int, str]] = []
-    i = 0
-    while i < len(buffer):
-        if buffer.startswith("\r\n", i):
-            breaks.append((len(flat_chars), "\r\n"))
-            i += 2
-        elif buffer[i] == "\n":
-            breaks.append((len(flat_chars), "\n"))
-            i += 1
-        elif buffer[i] == "\r":
-            breaks.append((len(flat_chars), "\r"))
-            i += 1
-        else:
-            flat_chars.append(buffer[i])
-            i += 1
-    return "".join(flat_chars), breaks
-
-
-def adjust_breaks(breaks: list[tuple[int, str]], threshold: int, delta: int) -> None:
-    for i, (pos, br) in enumerate(breaks):
-        if pos >= threshold:
-            breaks[i] = (pos + delta, br)
-
-
-def insert_breaks(flat: str, breaks: list[tuple[int, str]]) -> str:
-    result = flat
-    for pos, br in reversed(breaks):
-        if 0 <= pos <= len(result):
-            result = result[:pos] + br + result[pos:]
-    return result
+def top_level_token_spans(text: str) -> list[tuple[int, int]]:
+    """Return field spans inside the first outer brace without copying fields."""
+    opening = text.find("{")
+    if opening < 0:
+        return []
+    spans: list[tuple[int, int]] = []
+    token_start = opening + 1
+    depth = 0
+    in_quotes = False
+    i = token_start
+    while i < len(text):
+        ch = text[i]
+        if in_quotes:
+            if ch == '"':
+                if i + 1 < len(text) and text[i + 1] == '"':
+                    i += 2
+                    continue
+                in_quotes = False
+        elif ch == '"':
+            in_quotes = True
+        elif ch == "{":
+            depth += 1
+        elif ch == "}":
+            if depth == 0:
+                spans.append((token_start, i))
+                return spans
+            depth -= 1
+        elif ch == "," and depth == 0:
+            spans.append((token_start, i))
+            token_start = i + 1
+        i += 1
+    return []
 
 
 def replace_number_token(token: str, mapping: dict[int, int] | None) -> str:
+    """Replace one numeric field while retaining its surrounding whitespace."""
     if mapping is None:
         return token
-    s = token.strip()
-    if not s.isdigit():
+    left = len(token) - len(token.lstrip())
+    right = len(token.rstrip())
+    value = token[left:right]
+    if not value.isdigit():
         return token
-    n = int(s)
-    if n in mapping:
-        return str(mapping[n])
-    return token
+    replacement = mapping.get(int(value))
+    if replacement is None:
+        return token
+    return token[:left] + str(replacement) + token[right:]
 
 
 def renumber_composite(token: str, mapping: dict[int, int] | None) -> str:
     if mapping is None:
         return token
-    s = token.strip()
-    if not (s.startswith("{") and s.endswith("}")):
+    spans = top_level_token_spans(token)
+    if not spans:
         return replace_number_token(token, mapping)
-    parts = tokenize(s[1:-1])
-    parts = [replace_number_token(p, mapping) for p in parts]
-    return "{" + ",".join(parts) + "}"
-
-
-def renumber_tokens(tokens: list[str], maps: dict[int, dict[int, int]]) -> list[str]:
-    out = list(tokens)
-    for idx, obj_type, composite in REF_FIELDS:
-        if idx >= len(out):
-            continue
-        m = maps.get(obj_type)
-        if composite:
-            out[idx] = renumber_composite(out[idx], m)
-        else:
-            out[idx] = replace_number_token(out[idx], m)
-    return out
+    result = token
+    for start, end in reversed(spans):
+        old = result[start:end]
+        new = replace_number_token(old, mapping)
+        if new != old:
+            result = result[:start] + new + result[end:]
+    return result
 
 
 def renumber_record_preserving_breaks(buffer: str, maps: dict[int, dict[int, int]]) -> str:
-    flat, breaks = collect_flat_and_breaks(buffer)
-    stripped = flat.strip()
-    trailing_comma = stripped.endswith(",")
-    if trailing_comma:
-        stripped = stripped[:-1].rstrip()
-    if not (stripped.startswith("{") and stripped.endswith("}")):
+    spans = top_level_token_spans(buffer)
+    if not spans:
         return buffer
-    tokens = tokenize(stripped[1:-1])
-    new_tokens = renumber_tokens(tokens, maps)
-    # adjust break positions for length deltas
-    pos = 2  # after '{'
-    for old, new in zip(tokens, new_tokens):
-        delta = len(new) - len(old)
-        if delta:
-            adjust_breaks(breaks, pos + len(old), delta)
-        pos += len(old) + 1  # + comma
-    new_flat = "{" + ",".join(new_tokens) + "}"
-    if trailing_comma:
-        new_flat += ","
-    return insert_breaks(new_flat, breaks)
+    result = buffer
+    for idx, obj_type, composite in reversed(REF_FIELDS):
+        if idx >= len(spans):
+            continue
+        start, end = spans[idx]
+        old = result[start:end]
+        mapping = maps.get(obj_type)
+        new = (
+            renumber_composite(old, mapping)
+            if composite
+            else replace_number_token(old, mapping)
+        )
+        if new != old:
+            result = result[:start] + new + result[end:]
+    return result
 
 
 def iter_top_level_records(body: str) -> Iterable[str]:
