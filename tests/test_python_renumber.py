@@ -51,6 +51,27 @@ class PythonRenumberTests(unittest.TestCase):
         values = ['{1,"a,b",{2,3},4}'[start:end] for start, end in spans]
         self.assertEqual(values, ["1", '"a,b"', "{2,3}", "4"])
 
+    def test_stream_parser_reuses_correct_spans_across_chunk_boundaries(self) -> None:
+        source = SAMPLE + SAMPLE.replace("144608", "144609")
+        chunks = [source[:17], source[17:63], source[63:101], source[101:]]
+        parsed = list(engine.iter_top_level_records_with_spans_stream(chunks))
+        self.assertEqual(len(parsed), 2)
+        for record, spans in parsed:
+            expected = engine.top_level_token_spans(record)
+            self.assertEqual(spans, expected)
+            values = [record[start:end].strip() for start, end in spans]
+            self.assertEqual(len(values), 19)
+            self.assertEqual(values[9], '"line\nwith ""quotes"""')
+
+    def test_stream_parser_compatibility_wrapper_returns_same_records(self) -> None:
+        source = SAMPLE + SAMPLE
+        with_spans = [
+            record
+            for record, _ in engine.iter_top_level_records_with_spans_stream([source])
+        ]
+        compatible = list(engine.iter_top_level_records_stream([source]))
+        self.assertEqual(compatible, with_spans)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -541,8 +541,13 @@ def renumber_composite(token: str, mapping: dict[int, int] | None) -> str:
     return result
 
 
-def renumber_record_preserving_breaks(buffer: str, maps: dict[int, dict[int, int]]) -> str:
-    spans = top_level_token_spans(buffer)
+def renumber_record_preserving_breaks(
+    buffer: str,
+    maps: dict[int, dict[int, int]],
+    spans: list[tuple[int, int]] | None = None,
+) -> str:
+    if spans is None:
+        spans = top_level_token_spans(buffer)
     if not spans:
         return buffer
     result = buffer
@@ -621,13 +626,17 @@ def iter_top_level_records(body: str) -> Iterable[str]:
         i += 1
 
 
-def iter_top_level_records_stream(chunks: Iterable[str]) -> Iterator[str]:
-    """Parse records incrementally, retaining only the current record in memory."""
+def iter_top_level_records_with_spans_stream(
+    chunks: Iterable[str],
+) -> Iterator[tuple[str, list[tuple[int, int]]]]:
+    """Parse records and retain field spans discovered during the same pass."""
     depth = 0
     in_quotes = False
     quote_pending = False
     complete = False
     buf: list[str] = []
+    spans: list[tuple[int, int]] = []
+    token_start = 0
 
     for chunk in chunks:
         for ch in chunk:
@@ -636,9 +645,11 @@ def iter_top_level_records_stream(chunks: Iterable[str]) -> Iterator[str]:
                 reprocess = False
                 if complete:
                     if ch == "{":
-                        yield "".join(buf)
+                        yield "".join(buf), spans
                         buf = [ch]
                         depth = 1
+                        spans = []
+                        token_start = 1
                         complete = False
                     elif ch in " \t\r\n,":
                         buf.append(ch)
@@ -648,6 +659,8 @@ def iter_top_level_records_stream(chunks: Iterable[str]) -> Iterator[str]:
                     if ch == "{":
                         buf = [ch]
                         depth = 1
+                        spans = []
+                        token_start = 1
                     continue
 
                 if in_quotes:
@@ -666,17 +679,29 @@ def iter_top_level_records_stream(chunks: Iterable[str]) -> Iterator[str]:
                     continue
 
                 buf.append(ch)
+                position = len(buf) - 1
                 if ch == '"':
                     in_quotes = True
                 elif ch == "{":
                     depth += 1
                 elif ch == "}":
+                    if depth == 1:
+                        spans.append((token_start, position))
                     depth -= 1
                     if depth == 0:
                         complete = True
+                elif ch == "," and depth == 1:
+                    spans.append((token_start, position))
+                    token_start = position + 1
 
     if complete and buf:
-        yield "".join(buf)
+        yield "".join(buf), spans
+
+
+def iter_top_level_records_stream(chunks: Iterable[str]) -> Iterator[str]:
+    """Compatibility wrapper yielding only record text."""
+    for record, _ in iter_top_level_records_with_spans_stream(chunks):
+        yield record
 
 
 def file_locked(path: Path) -> bool:
@@ -756,7 +781,9 @@ def rewrite_lgp_renumber(
     try:
         with open_text_preserving_newlines(src) as source:
             _, _, nl, _, initial = read_lgp_header(source)
-            records = iter_top_level_records_stream(iter_body_chunks(source, initial))
+            records = iter_top_level_records_with_spans_stream(
+                iter_body_chunks(source, initial)
+            )
             first = next(records, None)
             if first is None and merge and dst.exists():
                 return 0
@@ -774,10 +801,19 @@ def rewrite_lgp_renumber(
                     write_utf8(output, version + nl + guid + nl + nl)
 
                 if first is not None:
-                    write_utf8(output, renumber_record_preserving_breaks(first, maps))
+                    first_record, first_spans = first
+                    write_utf8(
+                        output,
+                        renumber_record_preserving_breaks(
+                            first_record, maps, first_spans
+                        ),
+                    )
                     count = 1
-                for rec in records:
-                    write_utf8(output, renumber_record_preserving_breaks(rec, maps))
+                for rec, rec_spans in records:
+                    write_utf8(
+                        output,
+                        renumber_record_preserving_breaks(rec, maps, rec_spans),
+                    )
                     count += 1
                     if count % 5000 == 0:
                         log(f"  … перенумеровано записей: {count}")
