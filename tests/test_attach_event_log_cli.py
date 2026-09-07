@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import json
+import hashlib
 import os
 import subprocess
 import sys
@@ -124,6 +126,7 @@ class AttachEventLogCliTests(unittest.TestCase):
             )
 
             log_path = root / "attach.log"
+            report_path = root / "attach-report.json"
             proc = run_cli(
                 [
                     "--mode",
@@ -138,12 +141,26 @@ class AttachEventLogCliTests(unittest.TestCase):
                     "20260101000000.lgp",
                     "--out-log",
                     str(log_path),
+                    "--report-json",
+                    str(report_path),
                 ]
             )
             self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
             self.assertTrue(log_path.exists())
             log_text = log_path.read_text(encoding="utf-8")
             self.assertIn("ATTACH OK", log_text)
+            report = json.loads(report_path.read_text(encoding="utf-8"))
+            self.assertEqual(report["schema_version"], 1)
+            self.assertEqual(report["files_processed"], 1)
+            self.assertEqual(report["files"][0]["records_processed"], 1)
+            self.assertEqual(report["files"][0]["guid"], guid_dst)
+            self.assertEqual(len(report["files"][0]["sha256"]), 64)
+            self.assertEqual(
+                report["files"][0]["sha256"],
+                hashlib.sha256(
+                    (dst / "20260101000000.lgp").read_bytes()
+                ).hexdigest(),
+            )
 
             out_lgp = (dst / "20260101000000.lgp").read_text(encoding="utf-8-sig")
             self.assertIn(guid_dst, out_lgp)

@@ -15,12 +15,15 @@ Exit codes:
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
 import os
 import re
 import shutil
 import sys
 import tempfile
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import BinaryIO, Iterable, Iterator, TextIO
 
@@ -149,11 +152,54 @@ def make_output_temp(dst: Path) -> Path:
     return Path(name)
 
 
-def copy_file_atomic(src: Path, dst: Path) -> None:
+def verify_lgp_header(path: Path, expected_version: str, expected_guid: str) -> None:
+    """Reject a temporary result whose journal identity is not the receiver's."""
+    with open_text_preserving_newlines(path) as stream:
+        version, guid, _, _, _ = read_lgp_header(stream)
+    if version != expected_version or guid.lower() != expected_guid.lower():
+        raise ValueError(
+            f"Проверка результата не пройдена для {path.name}: "
+            f"ожидались {expected_version}, {expected_guid}; "
+            f"получены {version}, {guid}."
+        )
+
+
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        while True:
+            chunk = stream.read(MIB)
+            if not chunk:
+                break
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def write_json_atomic(path: Path, value: object) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temp = make_output_temp(path)
+    try:
+        temp.write_text(
+            json.dumps(value, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        os.replace(temp, path)
+    finally:
+        if temp.exists():
+            temp.unlink()
+
+
+def copy_file_atomic(
+    src: Path,
+    dst: Path,
+    expected_version: str,
+    expected_guid: str,
+) -> None:
     """Copy a file beside its destination and publish it in one replace."""
     temp = make_output_temp(dst)
     try:
         shutil.copy2(src, temp)
+        verify_lgp_header(temp, expected_version, expected_guid)
         os.replace(temp, dst)
     finally:
         if temp.exists():
@@ -736,6 +782,7 @@ def copy_lgp_with_header(src: Path, dst: Path, version: str, guid: str) -> None:
             write_utf8(output, version + nl + guid + nl + nl)
             for chunk in iter_body_chunks(source, initial):
                 write_utf8(output, chunk)
+        verify_lgp_header(temp, version, guid)
         os.replace(temp, dst)
     finally:
         if temp.exists():
@@ -752,7 +799,9 @@ def merge_lgp_raw(src: Path, dst: Path) -> None:
             open(temp, "w+b") as output,
         ):
             _, _, _, _, src_initial = read_lgp_header(source)
-            _, _, _, dst_header, dst_initial = read_lgp_header(destination)
+            dst_version, dst_guid, _, dst_header, dst_initial = read_lgp_header(
+                destination
+            )
             output.write(b"\xef\xbb\xbf")
             write_utf8(output, dst_header)
             for chunk in iter_body_chunks(destination, dst_initial):
@@ -763,6 +812,7 @@ def merge_lgp_raw(src: Path, dst: Path) -> None:
                     source_has_body = True
                 write_utf8(output, chunk)
         if source_has_body:
+            verify_lgp_header(temp, dst_version, dst_guid)
             os.replace(temp, dst)
     finally:
         if temp.exists():
@@ -819,6 +869,7 @@ def rewrite_lgp_renumber(
                     count += 1
                     if count % 5000 == 0:
                         log(f"  … перенумеровано записей: {count}")
+        verify_lgp_header(temp, version, guid)
         os.replace(temp, dst)
         return count
     finally:
@@ -965,6 +1016,7 @@ def attach_cmd(
     files_from: Path | None,
     dedup: bool,
     split_by_day: bool,
+    report_json: Path | None = None,
 ) -> int:
     if dedup or split_by_day:
         log(
@@ -982,6 +1034,10 @@ def attach_cmd(
 
     if paths_refer_to_same_location(src_dir, dst_dir):
         log("Каталоги источника и приёмника указывают на один и тот же каталог.")
+        return EXIT_VALIDATION
+
+    if report_json is not None and report_json.suffix.lower() != ".json":
+        log("Итоговый отчёт должен иметь расширение .json.")
         return EXIT_VALIDATION
 
     lgf_src = src_dir / "1Cv8.lgf"
@@ -1078,16 +1134,18 @@ def attach_cmd(
         log("Словарь приёмника уже содержит все объекты источника.")
 
     processed = 0
+    file_results: list[dict[str, object]] = []
     for name, src_path, dst_path, action in plan:
         if file_locked(dst_path):
             log(f"Файл приёмника занят: {name}")
             return EXIT_BUSY
 
         log(f"Обработка {name} ({action}, remap={need_remap})…")
+        records_processed: int | None = None
         try:
             if action in ("replace", "copy"):
                 if need_remap:
-                    rewrite_lgp_renumber(
+                    records_processed = rewrite_lgp_renumber(
                         src_path,
                         dst_path,
                         dst["version"],
@@ -1110,11 +1168,16 @@ def attach_cmd(
                         copy_lgp_with_header(src_path, dst_path, dst["version"], dst["guid"])
                         log(f"Скопирован с заголовком приёмника: {name}")
                     else:
-                        copy_file_atomic(src_path, dst_path)
+                        copy_file_atomic(
+                            src_path,
+                            dst_path,
+                            dst["version"],
+                            dst["guid"],
+                        )
                         log(f"Скопирован: {name}")
             elif action == "merge":
                 if need_remap:
-                    rewrite_lgp_renumber(
+                    records_processed = rewrite_lgp_renumber(
                         src_path,
                         dst_path,
                         dst["version"],
@@ -1129,14 +1192,54 @@ def attach_cmd(
             else:
                 log(f"Неизвестный режим конфликта: {action}")
                 return EXIT_VALIDATION
-        except OSError as e:
+            verify_lgp_header(dst_path, dst["version"], dst["guid"])
+            result: dict[str, object] = {
+                "name": name,
+                "action": action,
+                "renumbered": need_remap,
+                "size_bytes": dst_path.stat().st_size,
+                "records_processed": records_processed,
+                "version": dst["version"],
+                "guid": dst["guid"],
+            }
+            if report_json is not None:
+                result["sha256"] = sha256_file(dst_path)
+        except (OSError, ValueError) as e:
             log(f"Ошибка записи {name}: {e}")
             return EXIT_BUSY
+        file_results.append(result)
+        records_text = (
+            str(records_processed)
+            if records_processed is not None
+            else "не подсчитывались (быстрый побайтовый режим)"
+        )
+        log(
+            f"Проверено: {name}; размер {result['size_bytes']} байт; "
+            f"записей источника: {records_text}."
+        )
         processed += 1
 
     n_lgx = delete_lgx(dst_dir)
     log(f"Обработано файлов: {processed}")
     log(f"Удалено индексов *.lgx: {n_lgx}")
+    if report_json is not None:
+        report = {
+            "schema_version": 1,
+            "completed_at_utc": datetime.now(timezone.utc).isoformat(),
+            "source": str(src_dir),
+            "destination": str(dst_dir),
+            "files_processed": processed,
+            "indexes_deleted": n_lgx,
+            "files": file_results,
+        }
+        try:
+            write_json_atomic(report_json, report)
+            log(f"Итоговый JSON-отчёт: {report_json}")
+        except OSError as e:
+            log(
+                "Присоединение завершено, но итоговый JSON-отчёт "
+                f"не удалось сохранить: {e}"
+            )
     log("=== Конец присоединения (Python) ===")
     log("ATTACH OK")
     return EXIT_OK
@@ -1173,6 +1276,11 @@ def build_arg_parser() -> argparse.ArgumentParser:
         help="Разбивка по дням (MVP: не поддерживается)",
     )
     p.add_argument("--out-log", default=None, help="Путь к лог-файлу прогресса (UTF-8)")
+    p.add_argument(
+        "--report-json",
+        default=None,
+        help="Итоговый JSON с проверенными заголовками, размерами и SHA-256",
+    )
     return p
 
 
@@ -1196,6 +1304,7 @@ def main(argv: list[str] | None = None) -> int:
             files_from=Path(args.files_from) if args.files_from else None,
             dedup=args.dedup,
             split_by_day=args.split_by_day,
+            report_json=Path(args.report_json) if args.report_json else None,
         )
     except Exception as e:  # noqa: BLE001 — CLI boundary
         log(f"Ошибка: {e}")

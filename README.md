@@ -84,12 +84,14 @@ README.md
 
 ```powershell
 python tools/attach_event_log.py --mode analyze --src D:\jr\old --dst D:\jr\new
-python tools/attach_event_log.py --mode attach --src D:\jr\old --dst D:\jr\new --conflict merge --out-log D:\jr\attach.log
+python tools/attach_event_log.py --mode attach --src D:\jr\old --dst D:\jr\new --conflict merge --out-log D:\jr\attach.log --report-json D:\jr\attach-report.json
 ```
 
 Коды выхода: `0` OK, `1` ошибка данных/опций, `2` файлы заняты.
 
 Перед первой записью Python-режим проверяет блокировки всех выбранных файлов и оценивает свободное место с учётом временного файла, перенумерации, объединения и уже опубликованных периодов. При недостатке места словарь `1Cv8.lgf` остаётся неизменным.
+
+Каждый временный LGP проверяется по версии и GUID до публикации. Параметр `--report-json` дополнительно сохраняет размеры и SHA-256 результатов; точное число записей указывается для файлов, прошедших перенумерацию. В быстром побайтовом режиме записи повторно не подсчитываются.
 
 ## Сборка EPF из исходников
 

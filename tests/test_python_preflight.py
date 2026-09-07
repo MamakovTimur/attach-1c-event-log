@@ -101,6 +101,44 @@ class PythonPreflightTests(unittest.TestCase):
             self.assertEqual(result, engine.EXIT_VALIDATION)
             self.assertEqual((destination / "1Cv8.lgf").read_bytes(), lgf_before)
 
+    def test_failed_temp_verification_does_not_publish_lgp(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            source, destination, _ = self.make_journals(Path(tmp))
+            with mock.patch.object(
+                engine,
+                "verify_lgp_header",
+                side_effect=ValueError("synthetic verification failure"),
+            ):
+                result = engine.attach_cmd(
+                    source,
+                    destination,
+                    conflict="merge",
+                    files="20260101000000.lgp",
+                    files_from=None,
+                    dedup=False,
+                    split_by_day=False,
+                )
+            self.assertEqual(result, engine.EXIT_BUSY)
+            self.assertFalse((destination / "20260101000000.lgp").exists())
+
+    def test_invalid_report_extension_is_rejected_before_write(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            source, destination, _ = self.make_journals(Path(tmp))
+            lgf_before = (destination / "1Cv8.lgf").read_bytes()
+            result = engine.attach_cmd(
+                source,
+                destination,
+                conflict="merge",
+                files="20260101000000.lgp",
+                files_from=None,
+                dedup=False,
+                split_by_day=False,
+                report_json=Path(tmp) / "report.txt",
+            )
+            self.assertEqual(result, engine.EXIT_VALIDATION)
+            self.assertEqual((destination / "1Cv8.lgf").read_bytes(), lgf_before)
+            self.assertFalse((destination / "20260101000000.lgp").exists())
+
 
 if __name__ == "__main__":
     unittest.main()
