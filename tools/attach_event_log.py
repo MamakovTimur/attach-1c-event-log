@@ -789,7 +789,7 @@ def copy_lgp_with_header(src: Path, dst: Path, version: str, guid: str) -> None:
             temp.unlink()
 
 
-def merge_lgp_raw(src: Path, dst: Path) -> None:
+def merge_lgp_raw(src: Path, dst: Path) -> bool:
     temp = make_output_temp(dst)
     source_has_body = False
     try:
@@ -814,6 +814,7 @@ def merge_lgp_raw(src: Path, dst: Path) -> None:
         if source_has_body:
             verify_lgp_header(temp, dst_version, dst_guid)
             os.replace(temp, dst)
+        return source_has_body
     finally:
         if temp.exists():
             temp.unlink()
@@ -987,8 +988,11 @@ def required_free_space_bytes(
     added_lgf_bytes: int,
 ) -> int:
     """Return free bytes needed before the first destination mutation."""
-    largest_temp = lgf_destination_bytes + added_lgf_bytes + MIB
-    committed_growth = added_lgf_bytes
+    rollback_bytes = lgf_destination_bytes if added_lgf_bytes else 0
+    largest_temp = (
+        rollback_bytes + lgf_destination_bytes + added_lgf_bytes + MIB
+    )
+    committed_growth = rollback_bytes + added_lgf_bytes
     for _, source, destination, action in plan:
         destination_bytes = destination.stat().st_size if destination.exists() else 0
         source_bytes = source.stat().st_size
@@ -1005,6 +1009,46 @@ def required_free_space_bytes(
         largest_temp = max(largest_temp, committed_growth + temp_bytes)
         committed_growth += max(0, final_bytes - destination_bytes)
     return largest_temp + FREE_SPACE_MARGIN
+
+
+def make_lgf_rollback_copy(path: Path) -> Path:
+    rollback = make_output_temp(path)
+    try:
+        shutil.copy2(path, rollback)
+        return rollback
+    except OSError:
+        if rollback.exists():
+            rollback.unlink()
+        raise
+
+
+def finish_failed_attach(
+    lgf_rollback: Path | None,
+    lgf_destination: Path,
+    published_files: list[str],
+) -> None:
+    """Keep dictionary consistency after a failed multi-file operation."""
+    if lgf_rollback is None:
+        return
+    if published_files:
+        log(
+            "Частичный результат: словарь сохранён, потому что уже "
+            "опубликованы LGP: " + ", ".join(published_files)
+        )
+        log("Повторите присоединение для оставшихся файлов после устранения ошибки.")
+        try:
+            lgf_rollback.unlink(missing_ok=True)
+        except OSError as e:
+            log(f"Не удалось удалить резервную копию 1Cv8.lgf: {e}")
+        return
+    try:
+        os.replace(lgf_rollback, lgf_destination)
+        log("Изменения 1Cv8.lgf отменены: ни один LGP не был опубликован.")
+    except OSError as e:
+        log(
+            "Не удалось автоматически восстановить 1Cv8.lgf. "
+            f"Копия сохранена в {lgf_rollback}: {e}"
+        )
 
 
 def attach_cmd(
@@ -1122,9 +1166,14 @@ def attach_cmd(
         log("Недостаточно свободного места для безопасной временной записи.")
         return EXIT_BUSY
 
+    lgf_rollback: Path | None = None
     try:
+        if maps_info["added_rows"]:
+            lgf_rollback = make_lgf_rollback_copy(lgf_dst)
         append_rows_to_lgf(lgf_dst, maps_info["added_rows"], dst["newline"])
     except OSError as e:
+        if lgf_rollback is not None:
+            finish_failed_attach(lgf_rollback, lgf_dst, [])
         log(f"Не удалось обновить словарь: {e}")
         return EXIT_BUSY
 
@@ -1134,14 +1183,17 @@ def attach_cmd(
         log("Словарь приёмника уже содержит все объекты источника.")
 
     processed = 0
+    published_files: list[str] = []
     file_results: list[dict[str, object]] = []
     for name, src_path, dst_path, action in plan:
         if file_locked(dst_path):
             log(f"Файл приёмника занят: {name}")
+            finish_failed_attach(lgf_rollback, lgf_dst, published_files)
             return EXIT_BUSY
 
         log(f"Обработка {name} ({action}, remap={need_remap})…")
         records_processed: int | None = None
+        current_published = False
         try:
             if action in ("replace", "copy"):
                 if need_remap:
@@ -1153,6 +1205,7 @@ def attach_cmd(
                         maps_info["maps"],
                         merge=False,
                     )
+                    current_published = True
                     log(f"Переписан с перенумерацией: {name}")
                 else:
                     try:
@@ -1166,6 +1219,7 @@ def attach_cmd(
                         or src_ver != dst["version"]
                     ):
                         copy_lgp_with_header(src_path, dst_path, dst["version"], dst["guid"])
+                        current_published = True
                         log(f"Скопирован с заголовком приёмника: {name}")
                     else:
                         copy_file_atomic(
@@ -1174,6 +1228,7 @@ def attach_cmd(
                             dst["version"],
                             dst["guid"],
                         )
+                        current_published = True
                         log(f"Скопирован: {name}")
             elif action == "merge":
                 if need_remap:
@@ -1185,9 +1240,10 @@ def attach_cmd(
                         maps_info["maps"],
                         merge=True,
                     )
+                    current_published = records_processed > 0
                     log(f"Объединён с перенумерацией: {name}")
                 else:
-                    merge_lgp_raw(src_path, dst_path)
+                    current_published = merge_lgp_raw(src_path, dst_path)
                     log(f"Объединён: {name}")
             else:
                 log(f"Неизвестный режим конфликта: {action}")
@@ -1205,8 +1261,13 @@ def attach_cmd(
             if report_json is not None:
                 result["sha256"] = sha256_file(dst_path)
         except (OSError, ValueError) as e:
+            if current_published:
+                published_files.append(name)
             log(f"Ошибка записи {name}: {e}")
+            finish_failed_attach(lgf_rollback, lgf_dst, published_files)
             return EXIT_BUSY
+        if current_published:
+            published_files.append(name)
         file_results.append(result)
         records_text = (
             str(records_processed)
@@ -1240,6 +1301,11 @@ def attach_cmd(
                 "Присоединение завершено, но итоговый JSON-отчёт "
                 f"не удалось сохранить: {e}"
             )
+    if lgf_rollback is not None:
+        try:
+            lgf_rollback.unlink(missing_ok=True)
+        except OSError as e:
+            log(f"Не удалось удалить резервную копию 1Cv8.lgf: {e}")
     log("=== Конец присоединения (Python) ===")
     log("ATTACH OK")
     return EXIT_OK

@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import io
 import shutil
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 from unittest import mock
 
@@ -30,6 +32,29 @@ class PythonPreflightTests(unittest.TestCase):
             guid,
             [ev("20260101120000", "1")],
         )
+        return source, destination, guid
+
+    def make_journals_with_new_event(
+        self,
+        root: Path,
+        names: tuple[str, ...] = ("20260101000000.lgp",),
+    ) -> tuple[Path, Path, str]:
+        guid = "cccccccc-e311-4ee2-8582-7a2a46a59363"
+        source = root / "src"
+        destination = root / "dst"
+        source.mkdir()
+        destination.mkdir()
+        destination_rows = [
+            '{1,22222222-2222-2222-2222-222222222222,"U",1},',
+            '{2,"PC",1},',
+            '{3,"App",1},',
+            '{4,"Evt",1}',
+        ]
+        source_rows = [*destination_rows[:-1], '{4,"Evt",1},', '{4,"Evt2",2}']
+        write_lgf(source / "1Cv8.lgf", guid, source_rows)
+        write_lgf(destination / "1Cv8.lgf", guid, destination_rows)
+        for name in names:
+            write_lgp(source / name, guid, [ev("20260101120000", "1", event="2")])
         return source, destination, guid
 
     def test_estimate_includes_destination_for_merge(self) -> None:
@@ -80,6 +105,18 @@ class PythonPreflightTests(unittest.TestCase):
                 engine.FREE_SPACE_MARGIN + engine.MIB + 200,
             )
 
+    def test_required_space_includes_lgf_rollback_copy(self) -> None:
+        required = engine.required_free_space_bytes(
+            [],
+            need_remap=False,
+            lgf_destination_bytes=100,
+            added_lgf_bytes=20,
+        )
+        self.assertEqual(
+            required,
+            engine.FREE_SPACE_MARGIN + engine.MIB + 220,
+        )
+
     def test_skip_only_plan_does_not_change_dictionary(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             source, destination, guid = self.make_journals(Path(tmp))
@@ -103,7 +140,8 @@ class PythonPreflightTests(unittest.TestCase):
 
     def test_failed_temp_verification_does_not_publish_lgp(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            source, destination, _ = self.make_journals(Path(tmp))
+            source, destination, _ = self.make_journals_with_new_event(Path(tmp))
+            lgf_before = (destination / "1Cv8.lgf").read_bytes()
             with mock.patch.object(
                 engine,
                 "verify_lgp_header",
@@ -120,6 +158,50 @@ class PythonPreflightTests(unittest.TestCase):
                 )
             self.assertEqual(result, engine.EXIT_BUSY)
             self.assertFalse((destination / "20260101000000.lgp").exists())
+            self.assertEqual((destination / "1Cv8.lgf").read_bytes(), lgf_before)
+
+    def test_partial_result_keeps_dictionary_for_published_lgp(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            names = ("20260101000000.lgp", "20260102000000.lgp")
+            source, destination, _ = self.make_journals_with_new_event(
+                Path(tmp), names
+            )
+            original_verify = engine.verify_lgp_header
+            temp_verifications = 0
+
+            def fail_second_temp(path: Path, version: str, guid: str) -> None:
+                nonlocal temp_verifications
+                if path.suffix == ".tmp":
+                    temp_verifications += 1
+                    if temp_verifications == 2:
+                        raise ValueError("synthetic second-file failure")
+                original_verify(path, version, guid)
+
+            output = io.StringIO()
+            with (
+                mock.patch.object(
+                    engine,
+                    "verify_lgp_header",
+                    side_effect=fail_second_temp,
+                ),
+                redirect_stdout(output),
+            ):
+                result = engine.attach_cmd(
+                    source,
+                    destination,
+                    conflict="merge",
+                    files=",".join(names),
+                    files_from=None,
+                    dedup=False,
+                    split_by_day=False,
+                )
+
+            self.assertEqual(result, engine.EXIT_BUSY)
+            self.assertTrue((destination / names[0]).exists())
+            self.assertFalse((destination / names[1]).exists())
+            self.assertIn('"Evt2"', (destination / "1Cv8.lgf").read_text("utf-8-sig"))
+            self.assertIn("Частичный результат", output.getvalue())
+            self.assertIn(names[0], output.getvalue())
 
     def test_invalid_report_extension_is_rejected_before_write(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
