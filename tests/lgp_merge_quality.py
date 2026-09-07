@@ -358,8 +358,17 @@ def make_lgp(version: str, guid: str, records: list[str], crlf: bool = True) -> 
     return nl.join(parts) + nl
 
 
+def _write_utf8_bom_bytes(path: Path, text: str) -> None:
+    """Write text as UTF-8 with BOM without OS newline translation (no CRCRLF)."""
+    path.write_bytes(("\ufeff" + text).encode("utf-8"))
+
+
 def write_golden_fixtures(root: Path) -> list[Path]:
-    """Create anonymized synthetic .lgp under tests/fixtures/golden/."""
+    """Create anonymized synthetic .lgp under tests/fixtures/golden/.
+
+    Maintenance command only — tests must not call this. Committed fixtures
+    are the source of truth; regenerate explicitly when intentionally changing them.
+    """
     out_dir = root / "tests" / "fixtures" / "golden"
     out_dir.mkdir(parents=True, exist_ok=True)
     ver = "1CV8LOG(ver 2.0)"
@@ -377,9 +386,9 @@ def write_golden_fixtures(root: Path) -> list[Path]:
 
     files: list[Path] = []
 
-    p = out_dir / "day_a.lgp"
-    p.write_text(
-        make_lgp(
+    specs: list[tuple[str, str, str, list[str]]] = [
+        (
+            "day_a.lgp",
             ver,
             guid_a,
             [
@@ -388,43 +397,28 @@ def write_golden_fixtures(root: Path) -> list[Path]:
                 ev("20260820010303", "C", "1", "2", '"tx-end"'),
             ],
         ),
-        encoding="utf-8-sig",
-    )
-    files.append(p)
-
-    p = out_dir / "day_b_overlap.lgp"
-    p.write_text(
-        make_lgp(
+        (
+            "day_b_overlap.lgp",
             ver,
             guid_b,
             [
-                ev("20260820010101", "N", "1", "1", '"login"'),  # duplicate of day_a
+                ev("20260820010101", "N", "1", "1", '"login"'),
                 ev("20260820010404", "N", "2", "3", '"other"'),
             ],
         ),
-        encoding="utf-8-sig",
-    )
-    files.append(p)
-
-    p = out_dir / "multiday.lgp"
-    p.write_text(
-        make_lgp(
+        (
+            "multiday.lgp",
             ver,
             guid_a,
             [
                 ev("20260820010101", "N", "1", "1"),
                 ev("20260821010101", "N", "1", "1"),
                 ev("20260822010101", "U", "1", "2", '"span"'),
-                ev("20260823010101", "C", "1", "2", '"span-end"'),  # after midnight, sticky
+                ev("20260823010101", "C", "1", "2", '"span-end"'),
             ],
         ),
-        encoding="utf-8-sig",
-    )
-    files.append(p)
-
-    p = out_dir / "open_tx_tail.lgp"
-    p.write_text(
-        make_lgp(
+        (
+            "open_tx_tail.lgp",
             ver,
             guid_a,
             [
@@ -432,44 +426,34 @@ def write_golden_fixtures(root: Path) -> list[Path]:
                 ev("20260820010202", "U", "1", "2", '"open"'),
             ],
         ),
-        encoding="utf-8-sig",
-    )
-    files.append(p)
-
-    p = out_dir / "archive_packed.lgp"
-    # dictionary row + event row under one header
-    body_recs = [
-        '{1,aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee,"",1}',
-        '{4,"_$Session$_.Start",1}',
-        ev("20260820010101", "N", "1", "1"),
-    ]
-    p.write_text(make_lgp(ver, guid_a, body_recs), encoding="utf-8-sig")
-    files.append(p)
-
-    p = out_dir / "emptyish.lgp"
-    p.write_text(make_lgp(ver, guid_a, []), encoding="utf-8-sig")
-    files.append(p)
-
-    p = out_dir / "renumber_src.lgp"
-    p.write_text(
-        make_lgp(
+        (
+            "archive_packed.lgp",
+            ver,
+            guid_a,
+            [
+                '{1,aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee,"",1}',
+                '{4,"_$Session$_.Start",1}',
+                ev("20260820010101", "N", "1", "1"),
+            ],
+        ),
+        ("emptyish.lgp", ver, guid_a, []),
+        (
+            "renumber_src.lgp",
             ver,
             guid_a,
             [ev("20260824000001", "N", "9", "9", '"src"')],
         ),
-        encoding="utf-8-sig",
-    )
-    files.append(p)
-
-    p = out_dir / "renumber_dst.lgp"
-    p.write_text(
-        make_lgp(
+        (
+            "renumber_dst.lgp",
             ver,
             guid_b,
             [ev("20260824000002", "N", "1", "1", '"dst"')],
         ),
-        encoding="utf-8-sig",
-    )
-    files.append(p)
+    ]
+
+    for name, version, guid, records in specs:
+        path = out_dir / name
+        _write_utf8_bom_bytes(path, make_lgp(version, guid, records))
+        files.append(path)
 
     return files

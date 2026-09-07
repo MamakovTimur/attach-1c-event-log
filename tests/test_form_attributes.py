@@ -112,6 +112,40 @@ class TestFormAttributes(unittest.TestCase):
         self.assertIn("РазбиватьИсточникПоДням", attrs)
         self.assertIn("ДедупликацияЗаписей", text)
         self.assertIn("РазбиватьИсточникПоДням", text)
+        self.assertIn("КаталогРезервнойКопии", attrs)
+        self.assertIn("КаталогРезервнойКопии", text)
+        self.assertIn("ТекстСправки", attrs)
+        self.assertIn("ТекстСправки", text)
+        self.assertIn("ЗаполнитьТекстСправкиНаСервере", text)
+        form_xml = FORM_XML.read_text(encoding="utf-8-sig")
+        self.assertIn('name="СтраницаСправка"', form_xml)
+        self.assertIn('name="РежимВыполнения"', form_xml)
+        self.assertIn('name="ВыполнятьНаСервере"', form_xml)
+        self.assertIn("RadioButtonField", form_xml)
+        self.assertIn("<RadioButtonType>Tumbler</RadioButtonType>", form_xml)
+        self.assertNotIn("<RadioButtonType>CheckBoxes</RadioButtonType>", form_xml)
+        self.assertNotIn("<RadioButtonType>RadioButtons</RadioButtonType>", form_xml)
+        self.assertNotIn("CheckBoxField name=\"РежимВыполнения\"", form_xml)
+        self.assertNotIn("CheckBoxField name=\"ВыполнятьНаСервере\"", form_xml)
+        self.assertIn(">Клиент<", form_xml)
+        self.assertIn(">Сервер<", form_xml)
+        self.assertIn("РежимВыполнения", attrs)
+        self.assertIn("ВыполнятьНаСервере", attrs)
+        self.assertIn("РежимВыполненияПриИзменении", text)
+        self.assertIn("СинхронизироватьФлагИзРежимаВыполнения", text)
+        self.assertIn('name="ГруппаКаталоги"', form_xml)
+        self.assertIn('name="ГруппаРезервнаяКопия"', form_xml)
+        self.assertIn('name="ГруппаПараметрыСклейки"', form_xml)
+        self.assertIn('name="ГруппаДействия"', form_xml)
+        self.assertIn("Режим выполнения", form_xml)
+        self.assertIn(">На клиенте<", form_xml)
+        self.assertIn(">На сервере<", form_xml)
+        # Layout order: Protocol, Debug, Help tabs
+        i_prot = form_xml.index('name="СтраницаПротокол"')
+        i_dbg = form_xml.index('name="СтраницаОтладка"')
+        i_help = form_xml.index('name="СтраницаСправка"')
+        self.assertLess(i_prot, i_dbg)
+        self.assertLess(i_dbg, i_help)
         for cmd in (
             "ВосстановитьИзРезервнойКопии",
             "СохранитьПротокол",
@@ -119,7 +153,7 @@ class TestFormAttributes(unittest.TestCase):
             "МастерНазад",
         ):
             self.assertIn(cmd, text, f"handler {cmd} missing in Module.bsl")
-            self.assertIn(f'name="{cmd}"', FORM_XML.read_text(encoding="utf-8-sig"))
+            self.assertIn(f'name="{cmd}"', form_xml)
 
 
 if __name__ == "__main__":

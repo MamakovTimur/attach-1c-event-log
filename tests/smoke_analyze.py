@@ -84,7 +84,15 @@ def iter_lgf_records(lines: list[str]):
     buffer = ""
     depth = 0
     in_quotes = False
-    for line in lines[2:]:
+    started = False
+    for line in lines[1:]:
+        if not started:
+            stripped = line.strip()
+            if is_lgf_header_line(stripped):
+                continue
+            if not stripped.startswith("{"):
+                continue
+            started = True
         if depth == 0 and not buffer and not line.strip():
             continue
         if buffer:
@@ -123,6 +131,42 @@ def add_lgf_record(result: dict, record: str) -> None:
     result["count"] += 1
 
 
+UUID_RE = re.compile(
+    r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+)
+
+
+def extract_lgf_guid_line(stripped: str) -> str:
+    if not stripped:
+        return ""
+    if UUID_RE.fullmatch(stripped):
+        return stripped
+    if stripped.startswith("{") and stripped.endswith("}"):
+        inner = stripped[1:-1].strip()
+        if UUID_RE.fullmatch(inner):
+            return inner
+    return ""
+
+
+def header_guid_from_lines(lines: list[str]) -> str:
+    """GUID may be on line 2 or after blank lines (Desktop/TJtest layout)."""
+    if not lines:
+        return ""
+    for line in lines[1:]:
+        stripped = line.strip()
+        if not stripped:
+            continue
+        guid = extract_lgf_guid_line(stripped)
+        if guid:
+            return guid
+        break
+    return ""
+
+
+def is_lgf_header_line(stripped: str) -> bool:
+    return not stripped or bool(extract_lgf_guid_line(stripped))
+
+
 def read_lgf(path: Path) -> dict:
     raw = path.read_bytes()
     text = raw.decode("utf-8-sig", errors="strict")
@@ -134,7 +178,7 @@ def read_lgf(path: Path) -> dict:
 
     result = {
         "version": lines[0].strip(),
-        "guid": lines[1].strip() if len(lines) > 1 else "",
+        "guid": header_guid_from_lines(lines),
         "by_number": {t: {} for t in range(1, 9)},
         "by_key": {t: {} for t in range(1, 9)},
         "max_number": {t: 0 for t in range(1, 9)},

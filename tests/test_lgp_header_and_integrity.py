@@ -1,16 +1,47 @@
 # Regression for admin-facing integrity rules and header rewrite on copy.
-# Mirrors Module.bsl logic without 1C runtime.
+# Product integrity (1.3.32+) is HEADER-ONLY — never scan .lgp bodies in analyze.
+# Deep sample scan below is kept only as documentation of the old trap.
 
 from __future__ import annotations
 
+import re
 import tempfile
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
+MODULE = ROOT / "ПрисоединениеЖурналаРегистрации" / "Forms" / "Форма" / "Ext" / "Form" / "Module.bsl"
 
 SAMPLE_LIMIT = 2 * 1024 * 1024
+INVALID_FILE_OPEN_MODE = re.compile(r"РежимОткрытияФайла\.Чтение")
+
+
+def test_module_does_not_use_invalid_file_open_mode() -> None:
+    """РежимОткрытияФайла has Открыть/Создать/…, not Чтение — runtime error on analyze."""
+    text = MODULE.read_text(encoding="utf-8-sig")
+    for line_no, line in enumerate(text.splitlines(), 1):
+        code = line.split("//", 1)[0]
+        assert not INVALID_FILE_OPEN_MODE.search(code), (
+            f"{MODULE.name}:{line_no}: invalid РежимОткрытияФайла.Чтение"
+        )
+
+
+def check_lgp_header_only(text: str, expected_guid: str, expected_version: str) -> dict:
+    """Mirrors ПроверитьЦелостностьФайлаLgpБезКэша since 1.3.32."""
+    lines = text.splitlines()
+    version = lines[0].strip() if lines else ""
+    guid = lines[1].strip() if len(lines) > 1 else ""
+    issues: list[str] = []
+    if "1CV8LOG" not in version:
+        issues.append("bad marker")
+    if expected_version and version != expected_version:
+        issues.append("version mismatch")
+    if guid.lower() != expected_guid.lower():
+        issues.append("guid mismatch")
+    return {"ok": not issues, "issues": issues}
 
 
 def check_lgp_sample(text: str, expected_guid: str, expected_version: str, limit: int = SAMPLE_LIMIT) -> dict:
+    """Legacy deep sample — DO NOT use in product analyze (BSL Сред on long lines hangs)."""
     lines = text.splitlines()
     version = lines[0].strip() if lines else ""
     guid = lines[1].strip() if len(lines) > 1 else ""
@@ -60,7 +91,6 @@ def check_lgp_sample(text: str, expected_guid: str, expected_version: str, limit
         issues.append("guid mismatch")
     if eof and (depth != 0 or buf.strip()):
         issues.append("truncated at eof")
-    # hit_limit + open depth must NOT be an issue
     return {"ok": not issues, "issues": issues, "hit_limit": hit_limit, "eof": eof}
 
 
@@ -152,9 +182,18 @@ def test_eof_open_bracket_is_corruption() -> None:
 
 def test_guid_mismatch_detected() -> None:
     text = "1CV8LOGVERSION=8.3\nsource-guid\n\n{1,2},\n"
-    result = check_lgp_sample(text, "dest-guid", "1CV8LOGVERSION=8.3")
+    result = check_lgp_header_only(text, "dest-guid", "1CV8LOGVERSION=8.3")
     assert "guid mismatch" in result["issues"]
     assert result["ok"] is False
+
+
+def test_header_only_ignores_huge_body() -> None:
+    """Product path must not walk the body — huge unclosed body is still ok if header matches."""
+    header = "1CV8LOGVERSION=8.3\nsource-guid\n\n"
+    body = "{" + ("x" * (SAMPLE_LIMIT + 100))
+    result = check_lgp_header_only(header + body, "source-guid", "1CV8LOGVERSION=8.3")
+    assert result["ok"] is True
+    assert result["issues"] == []
 
 
 def test_header_rewrite_on_copy() -> None:
@@ -166,7 +205,7 @@ def test_header_rewrite_on_copy() -> None:
     assert lines[2] == ""
     assert lines[3:] == ["{1,2},", "{3,4},"]
     assert_native_lgp_header(out)
-    result = check_lgp_sample(out, "dest-guid", "1CV8LOGVERSION=8.3")
+    result = check_lgp_header_only(out, "dest-guid", "1CV8LOGVERSION=8.3")
     assert result["ok"] is True
 
 
@@ -214,6 +253,7 @@ def test_copy_receiver_heals_missing_blank() -> None:
 
 
 def main() -> int:
+    test_module_does_not_use_invalid_file_open_mode()
     test_limit_open_bracket_is_not_corruption()
     test_eof_open_bracket_is_corruption()
     test_guid_mismatch_detected()

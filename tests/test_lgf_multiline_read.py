@@ -28,6 +28,23 @@ def test_iter_lgf_records_multiline() -> None:
     assert records[2].startswith('{3,"EventX",3')
 
 
+def test_read_lgf_skips_blank_line_before_guid() -> None:
+    sample = """\
+1CV8LOG(ver 2.0)
+
+668f5b15-fefe-400c-81ca-327564def13b
+
+
+{2,"UserA",1},
+"""
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "1Cv8.lgf"
+        path.write_text(sample, encoding="utf-8-sig")
+        parsed = read_lgf(path)
+    assert parsed["guid"] == "668f5b15-fefe-400c-81ca-327564def13b"
+    assert parsed["count"] == 1
+
+
 def test_read_lgf_counts_multiline_entry() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         path = Path(tmp) / "1Cv8.lgf"
@@ -81,6 +98,7 @@ def test_writer_strips_last_comma() -> None:
 
 if __name__ == "__main__":
     test_iter_lgf_records_multiline()
+    test_read_lgf_skips_blank_line_before_guid()
     test_read_lgf_counts_multiline_entry()
     test_single_line_still_works()
     test_type13_numeric_not_misread_as_type1()

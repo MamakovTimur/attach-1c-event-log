@@ -20,99 +20,38 @@
 	</Events>
 	<ChildItems>
 		<UsualGroup name="ГруппаВерсия" id="93">
-			<Group>AlwaysHorizontal</Group>
-			<Representation>None</Representation>
-			<ShowTitle>false</ShowTitle>
-			<ExtendedTooltip name="ГруппаВерсияРасширеннаяПодсказка" id="94"/>
-			<ChildItems>
-				<InputField name="ВерсияОбработки" id="95">
-					<DataPath>ВерсияОбработки</DataPath>
-					<ReadOnly>true</ReadOnly>
-					<Title>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Версия обработки</v8:content>
-						</v8:item>
-					</Title>
-					<Width>10</Width>
-					<AutoMaxWidth>false</AutoMaxWidth>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Номер сборки EPF. Если не совпадает с ожидаемым — открыт старый файл обработки.</v8:content>
-						</v8:item>
-					</ToolTip>
-					<ContextMenu name="ВерсияОбработкиКонтекстноеМеню" id="96"/>
-					<ExtendedTooltip name="ВерсияОбработкиРасширеннаяПодсказка" id="97"/>
-				</InputField>
-			</ChildItems>
-		</UsualGroup>
-		<UsualGroup name="ГруппаМастер" id="130">
-			<Title>
-				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Мастер</v8:content>
-				</v8:item>
-			</Title>
-			<Group>Vertical</Group>
-			<Representation>NormalSeparation</Representation>
-			<ShowTitle>true</ShowTitle>
-			<ExtendedTooltip name="ГруппаМастерРасширеннаяПодсказка" id="131"/>
-			<ChildItems>
-				<LabelField name="ТекстШагаМастера" id="132">
-					<DataPath>ТекстШагаМастера</DataPath>
-					<TitleLocation>None</TitleLocation>
-					<AutoMaxWidth>false</AutoMaxWidth>
-					<ContextMenu name="ТекстШагаМастераКонтекстноеМеню" id="133"/>
-					<ExtendedTooltip name="ТекстШагаМастераРасширеннаяПодсказка" id="134"/>
-				</LabelField>
-				<LabelDecoration name="ПодсказкаМастера" id="135">
-					<AutoMaxWidth>false</AutoMaxWidth>
-					<Title formatted="false">
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Шаг 1: укажите копии каталогов ЖР (не живой srvinfo). При необходимости восстановите приёмник из *.bak_…</v8:content>
-						</v8:item>
-					</Title>
-					<ContextMenu name="ПодсказкаМастераКонтекстноеМеню" id="136"/>
-					<ExtendedTooltip name="ПодсказкаМастераРасширеннаяПодсказка" id="137"/>
-				</LabelDecoration>
-				<UsualGroup name="ГруппаКнопкиМастера" id="138">
 					<Group>AlwaysHorizontal</Group>
 					<Representation>None</Representation>
 					<ShowTitle>false</ShowTitle>
-					<ExtendedTooltip name="ГруппаКнопкиМастераРасширеннаяПодсказка" id="139"/>
+					<ExtendedTooltip name="ГруппаВерсияРасширеннаяПодсказка" id="94"/>
 					<ChildItems>
-						<Button name="КнопкаМастерНазад" id="140">
-							<Type>UsualButton</Type>
-							<CommandName>Form.Command.МастерНазад</CommandName>
-							<ExtendedTooltip name="КнопкаМастерНазадРасширеннаяПодсказка" id="141"/>
-						</Button>
-						<Button name="КнопкаМастерДалее" id="142">
-							<Type>UsualButton</Type>
-							<CommandName>Form.Command.МастерДалее</CommandName>
-							<ExtendedTooltip name="КнопкаМастерДалееРасширеннаяПодсказка" id="143"/>
-						</Button>
+						<InputField name="ВерсияОбработки" id="95">
+							<DataPath>ВерсияОбработки</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<Title>
+								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>Версия обработки</v8:content>
+								</v8:item>
+							</Title>
+							<Width>10</Width>
+							<AutoMaxWidth>false</AutoMaxWidth>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>Номер сборки EPF. Если не совпадает с ожидаемым — открыт старый файл обработки.</v8:content>
+								</v8:item>
+							</ToolTip>
+							<ContextMenu name="ВерсияОбработкиКонтекстноеМеню" id="96"/>
+							<ExtendedTooltip name="ВерсияОбработкиРасширеннаяПодсказка" id="97"/>
+						</InputField>
 					</ChildItems>
 				</UsualGroup>
-			</ChildItems>
-		</UsualGroup>
-		<LabelDecoration name="Подсказка" id="1">
-			<AutoMaxWidth>false</AutoMaxWidth>
-			<Title formatted="false">
-				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Укажите каталог старого ЖР (кластер 1) и каталог текущего ЖР (кластер 2). Обычно это папки 1Cv8Log. Рекомендуется работать с копиями: склеить в копии нового журнала, затем при остановленном кластере подменить каталог на сервере.</v8:content>
-				</v8:item>
-			</Title>
-			<ContextMenu name="ПодсказкаКонтекстноеМеню" id="2"/>
-			<ExtendedTooltip name="ПодсказкаРасширеннаяПодсказка" id="3"/>
-		</LabelDecoration>
 		<UsualGroup name="ГруппаКаталоги" id="4">
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
-					<v8:content>Каталоги журнала</v8:content>
+					<v8:content>Каталоги</v8:content>
 				</v8:item>
 			</Title>
 			<Group>Vertical</Group>
@@ -120,431 +59,639 @@
 			<ShowTitle>true</ShowTitle>
 			<ExtendedTooltip name="ГруппаКаталогиРасширеннаяПодсказка" id="5"/>
 			<ChildItems>
-				<InputField name="КаталогИсточника" id="6">
-					<DataPath>КаталогИсточника</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Старый ЖР (кластер 1)</v8:content>
-						</v8:item>
-					</Title>
-					<AutoMaxWidth>false</AutoMaxWidth>
-					<ChoiceButton>true</ChoiceButton>
-					<ContextMenu name="КаталогИсточникаКонтекстноеМеню" id="7"/>
-					<ExtendedTooltip name="КаталогИсточникаРасширеннаяПодсказка" id="8"/>
-					<Events>
-						<Event name="OnChange">КаталогИсточникаПриИзменении</Event>
-						<Event name="StartChoice">КаталогИсточникаНачалоВыбора</Event>
-					</Events>
-				</InputField>
-				<InputField name="КаталогSrvinfo" id="98">
-					<DataPath>КаталогSrvinfo</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Каталог srvinfo</v8:content>
-						</v8:item>
-					</Title>
-					<AutoMaxWidth>false</AutoMaxWidth>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Корень srvinfo или reg_XXXX кластера для поиска 1Cv8Log. Сохраняется между сеансами.</v8:content>
-						</v8:item>
-					</ToolTip>
-					<ContextMenu name="КаталогSrvinfoКонтекстноеМеню" id="99"/>
-					<ExtendedTooltip name="КаталогSrvinfoРасширеннаяПодсказка" id="100"/>
-				</InputField>
-				<InputField name="КаталогПриемника" id="9">
-					<DataPath>КаталогПриемника</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Текущий ЖР (кластер 2)</v8:content>
-						</v8:item>
-					</Title>
-					<AutoMaxWidth>false</AutoMaxWidth>
-					<ChoiceButton>true</ChoiceButton>
-					<ContextMenu name="КаталогПриемникаКонтекстноеМеню" id="10"/>
-					<ExtendedTooltip name="КаталогПриемникаРасширеннаяПодсказка" id="11"/>
-					<Events>
-						<Event name="OnChange">КаталогПриемникаПриИзменении</Event>
-						<Event name="StartChoice">КаталогПриемникаНачалоВыбора</Event>
-					</Events>
-				</InputField>
-				<UsualGroup name="ГруппаПоискКластера" id="63">
-					<Title>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Поиск в srvinfo</v8:content>
-						</v8:item>
-					</Title>
-					<Group>AlwaysHorizontal</Group>
-					<Representation>None</Representation>
-					<ShowTitle>false</ShowTitle>
-					<ExtendedTooltip name="ГруппаПоискКластераРасширеннаяПодсказка" id="64"/>
-					<ChildItems>
-						<InputField name="ИмяИБ" id="65">
-							<DataPath>ИмяИБ</DataPath>
-							<Title>
+				<LabelDecoration name="Подсказка" id="1">
+							<AutoMaxWidth>false</AutoMaxWidth>
+							<Title formatted="false">
 								<v8:item>
 									<v8:lang>ru</v8:lang>
-									<v8:content>Имя ИБ (фильтр)</v8:content>
+									<v8:content>Копии каталогов 1Cv8Log: старый (источник) и текущий (приёмник). Подробнее — вкладка «Справка».</v8:content>
 								</v8:item>
 							</Title>
-							<Width>20</Width>
+							<ContextMenu name="ПодсказкаКонтекстноеМеню" id="2"/>
+							<ExtendedTooltip name="ПодсказкаРасширеннаяПодсказка" id="3"/>
+						</LabelDecoration>
+				<InputField name="КаталогИсточника" id="6">
+									<DataPath>КаталогИсточника</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>ru</v8:lang>
+											<v8:content>Старый ЖР</v8:content>
+										</v8:item>
+									</Title>
+									<AutoMaxWidth>false</AutoMaxWidth>
+									<ChoiceButton>true</ChoiceButton>
+									<ContextMenu name="КаталогИсточникаКонтекстноеМеню" id="7"/>
+									<ExtendedTooltip name="КаталогИсточникаРасширеннаяПодсказка" id="8"/>
+									<Events>
+										<Event name="OnChange">КаталогИсточникаПриИзменении</Event>
+										<Event name="StartChoice">КаталогИсточникаНачалоВыбора</Event>
+									</Events>
+								</InputField>
+				<InputField name="КаталогПриемника" id="9">
+									<DataPath>КаталогПриемника</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>ru</v8:lang>
+											<v8:content>Текущий ЖР</v8:content>
+										</v8:item>
+									</Title>
+									<AutoMaxWidth>false</AutoMaxWidth>
+									<ChoiceButton>true</ChoiceButton>
+									<ContextMenu name="КаталогПриемникаКонтекстноеМеню" id="10"/>
+									<ExtendedTooltip name="КаталогПриемникаРасширеннаяПодсказка" id="11"/>
+									<Events>
+										<Event name="OnChange">КаталогПриемникаПриИзменении</Event>
+										<Event name="StartChoice">КаталогПриемникаНачалоВыбора</Event>
+									</Events>
+								</InputField>
+				<InputField name="КаталогSrvinfo" id="98">
+									<DataPath>КаталогSrvinfo</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>ru</v8:lang>
+											<v8:content>Каталог srvinfo</v8:content>
+										</v8:item>
+									</Title>
+									<AutoMaxWidth>false</AutoMaxWidth>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>ru</v8:lang>
+											<v8:content>Корень srvinfo или reg_XXXX кластера для поиска 1Cv8Log. Сохраняется между сеансами.</v8:content>
+										</v8:item>
+									</ToolTip>
+									<ContextMenu name="КаталогSrvinfoКонтекстноеМеню" id="99"/>
+									<ExtendedTooltip name="КаталогSrvinfoРасширеннаяПодсказка" id="100"/>
+								</InputField>
+				<UsualGroup name="ГруппаПоискКластера" id="63">
+									<Title>
+										<v8:item>
+											<v8:lang>ru</v8:lang>
+											<v8:content>Поиск в srvinfo</v8:content>
+										</v8:item>
+									</Title>
+									<Group>AlwaysHorizontal</Group>
+									<Representation>None</Representation>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="ГруппаПоискКластераРасширеннаяПодсказка" id="64"/>
+									<ChildItems>
+										<InputField name="ИмяИБ" id="65">
+											<DataPath>ИмяИБ</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>ru</v8:lang>
+													<v8:content>Имя ИБ (фильтр)</v8:content>
+												</v8:item>
+											</Title>
+											<Width>20</Width>
+											<AutoMaxWidth>false</AutoMaxWidth>
+											<ContextMenu name="ИмяИБКонтекстноеМеню" id="66"/>
+											<ExtendedTooltip name="ИмяИБРасширеннаяПодсказка" id="67"/>
+										</InputField>
+										<Button name="КнопкаНайтиВКластереИсточник" id="68">
+											<Type>UsualButton</Type>
+											<CommandName>Form.Command.НайтиВКластереИсточник</CommandName>
+											<ExtendedTooltip name="КнопкаНайтиВКластереИсточникРасширеннаяПодсказка" id="69"/>
+										</Button>
+										<Button name="КнопкаНайтиВКластереПриемник" id="70">
+											<Type>UsualButton</Type>
+											<CommandName>Form.Command.НайтиВКластереПриемник</CommandName>
+											<ExtendedTooltip name="КнопкаНайтиВКластереПриемникРасширеннаяПодсказка" id="71"/>
+										</Button>
+									</ChildItems>
+								</UsualGroup>
+				<RadioButtonField name="РежимВыполнения" id="75">
+									<DataPath>РежимВыполнения</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>ru</v8:lang>
+											<v8:content>Режим выполнения</v8:content>
+										</v8:item>
+									</Title>
+									<TitleLocation>Top</TitleLocation>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>ru</v8:lang>
+											<v8:content>«На клиенте» — файлы на машине пользователя. «На сервере» — пути в нотации ОС сервера приложений.</v8:content>
+										</v8:item>
+									</ToolTip>
+									<ToolTipRepresentation>Balloon</ToolTipRepresentation>
+									<AutoMaxWidth>false</AutoMaxWidth>
+									<RadioButtonType>Tumbler</RadioButtonType>
+									<ColumnsCount>2</ColumnsCount>
+									<EqualColumnsWidth>true</EqualColumnsWidth>
+									<ChoiceList>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>ru</v8:lang>
+														<v8:content>На клиенте</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">Клиент</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>ru</v8:lang>
+														<v8:content>На сервере</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">Сервер</Value>
+											</xr:Value>
+										</xr:Item>
+									</ChoiceList>
+									<ContextMenu name="РежимВыполненияКонтекстноеМеню" id="76"/>
+									<ExtendedTooltip name="РежимВыполненияРасширеннаяПодсказка" id="77"/>
+									<Events>
+										<Event name="OnChange">РежимВыполненияПриИзменении</Event>
+									</Events>
+								</RadioButtonField>
+				<LabelDecoration name="ПодсказкаРежимаСервера" id="101">
+							<Visible>true</Visible>
 							<AutoMaxWidth>false</AutoMaxWidth>
-							<ContextMenu name="ИмяИБКонтекстноеМеню" id="66"/>
-							<ExtendedTooltip name="ИмяИБРасширеннаяПодсказка" id="67"/>
-						</InputField>
-						<Button name="КнопкаНайтиВКластереИсточник" id="68">
-							<Type>UsualButton</Type>
-							<CommandName>Form.Command.НайтиВКластереИсточник</CommandName>
-							<ExtendedTooltip name="КнопкаНайтиВКластереИсточникРасширеннаяПодсказка" id="69"/>
-						</Button>
-						<Button name="КнопкаНайтиВКластереПриемник" id="70">
-							<Type>UsualButton</Type>
-							<CommandName>Form.Command.НайтиВКластереПриемник</CommandName>
-							<ExtendedTooltip name="КнопкаНайтиВКластереПриемникРасширеннаяПодсказка" id="71"/>
-						</Button>
+								<Title formatted="false">
+								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>На клиенте: каталоги на машине пользователя. Подробнее — «Справка».</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="ПодсказкаРежимаСервераКонтекстноеМеню" id="102"/>
+							<ExtendedTooltip name="ПодсказкаРежимаСервераРасширеннаяПодсказка" id="103"/>
+						</LabelDecoration>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="ГруппаРезервнаяКопия" id="154">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Резервная копия</v8:content>
+				</v8:item>
+			</Title>
+			<Group>Vertical</Group>
+			<Representation>NormalSeparation</Representation>
+			<ShowTitle>true</ShowTitle>
+			<ExtendedTooltip name="ГруппаРезервнаяКопияРасширеннаяПодсказка" id="155"/>
+			<ChildItems>
+				<CheckBoxField name="СоздаватьРезервнуюКопию" id="14">
+									<DataPath>СоздаватьРезервнуюКопию</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>ru</v8:lang>
+											<v8:content>Резервная копия изменяемых файлов</v8:content>
+										</v8:item>
+									</Title>
+									<TitleLocation>Right</TitleLocation>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>ru</v8:lang>
+											<v8:content>Перед записью копирует 1Cv8.lgf и отмеченные .lgp. Каталог хранения задаётся полем ниже; пусто = рядом с приёмником.</v8:content>
+										</v8:item>
+									</ToolTip>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="СоздаватьРезервнуюКопиюКонтекстноеМеню" id="15"/>
+									<ExtendedTooltip name="СоздаватьРезервнуюКопиюРасширеннаяПодсказка" id="16"/>
+									<Events>
+										<Event name="OnChange">СоздаватьРезервнуюКопиюПриИзменении</Event>
+									</Events>
+								</CheckBoxField>
+				<InputField name="КаталогРезервнойКопии" id="156">
+									<DataPath>КаталогРезервнойКопии</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>ru</v8:lang>
+											<v8:content>Каталог резервной копии</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>ru</v8:lang>
+											<v8:content>Куда писать *.bak_… перед записью. Пусто — рядом с приёмником (родитель каталога 1Cv8Log). Для больших ЖР укажите отдельный диск/папку.</v8:content>
+										</v8:item>
+									</ToolTip>
+									<AutoMaxWidth>false</AutoMaxWidth>
+									<ChoiceButton>true</ChoiceButton>
+									<ClearButton>true</ClearButton>
+									<ContextMenu name="КаталогРезервнойКопииКонтекстноеМеню" id="157"/>
+									<ExtendedTooltip name="КаталогРезервнойКопииРасширеннаяПодсказка" id="158"/>
+									<Events>
+										<Event name="StartChoice">КаталогРезервнойКопииНачалоВыбора</Event>
+									</Events>
+								</InputField>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="ГруппаПараметрыСклейки" id="12">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Параметры склейки</v8:content>
+				</v8:item>
+			</Title>
+			<Group>Vertical</Group>
+			<Representation>NormalSeparation</Representation>
+			<ShowTitle>true</ShowTitle>
+			<ExtendedTooltip name="ГруппаПараметрыСклейкиРасширеннаяПодсказка" id="13"/>
+			<ChildItems>
+				<InputField name="РежимКонфликта" id="17">
+									<DataPath>РежимКонфликта</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>ru</v8:lang>
+											<v8:content>Если файл периода уже есть</v8:content>
+										</v8:item>
+									</Title>
+									<Width>20</Width>
+									<DropListButton>true</DropListButton>
+									<ChoiceButton>false</ChoiceButton>
+									<ListChoiceMode>true</ListChoiceMode>
+									<ContextMenu name="РежимКонфликтаКонтекстноеМеню" id="18"/>
+									<ExtendedTooltip name="РежимКонфликтаРасширеннаяПодсказка" id="19"/>
+									<Events>
+										<Event name="OnChange">РежимКонфликтаПриИзменении</Event>
+									</Events>
+								</InputField>
+				<UsualGroup name="ГруппаФлагиСклейки" id="164">
+					<Group>Vertical</Group>
+					<Representation>None</Representation>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="ГруппаФлагиСклейкиРасширеннаяПодсказка" id="165"/>
+					<ChildItems>
+					<CheckBoxField name="ПроверятьЦелостность" id="72">
+										<DataPath>ПроверятьЦелостность</DataPath>
+										<Title>
+											<v8:item>
+												<v8:lang>ru</v8:lang>
+												<v8:content>Проверка целостности</v8:content>
+											</v8:item>
+										</Title>
+										<TitleLocation>Right</TitleLocation>
+										<CheckBoxType>Auto</CheckBoxType>
+										<ContextMenu name="ПроверятьЦелостностьКонтекстноеМеню" id="73"/>
+										<ExtendedTooltip name="ПроверятьЦелостностьРасширеннаяПодсказка" id="74"/>
+										<Events>
+											<Event name="OnChange">ПроверятьЦелостностьПриИзменении</Event>
+										</Events>
+									</CheckBoxField>
+					<CheckBoxField name="ДедупликацияЗаписей" id="148">
+										<DataPath>ДедупликацияЗаписей</DataPath>
+										<Title>
+											<v8:item>
+												<v8:lang>ru</v8:lang>
+												<v8:content>Дедупликация записей</v8:content>
+											</v8:item>
+										</Title>
+										<TitleLocation>Right</TitleLocation>
+										<ToolTip>
+											<v8:item>
+												<v8:lang>ru</v8:lang>
+												<v8:content>Экспериментально. Отпечаток неполный (без статуса/id транзакции, метаданных, данных). Не для боевого ЖР без копии. По умолчанию выключено.</v8:content>
+											</v8:item>
+										</ToolTip>
+										<CheckBoxType>Auto</CheckBoxType>
+										<ContextMenu name="ДедупликацияЗаписейКонтекстноеМеню" id="149"/>
+										<ExtendedTooltip name="ДедупликацияЗаписейРасширеннаяПодсказка" id="150"/>
+										<Events>
+											<Event name="OnChange">ДедупликацияЗаписейПриИзменении</Event>
+										</Events>
+									</CheckBoxField>
+					<CheckBoxField name="РазбиватьИсточникПоДням" id="151">
+										<DataPath>РазбиватьИсточникПоДням</DataPath>
+										<Title>
+											<v8:item>
+												<v8:lang>ru</v8:lang>
+												<v8:content>Разбивать источник по дням</v8:content>
+											</v8:item>
+										</Title>
+										<TitleLocation>Right</TitleLocation>
+										<ToolTip>
+											<v8:item>
+												<v8:lang>ru</v8:lang>
+												<v8:content>Экспериментально. Backup по исходному имени периода; «защита транзакций» — эвристика U/C/R, не гарантия. По умолчанию выключено.</v8:content>
+											</v8:item>
+										</ToolTip>
+										<CheckBoxType>Auto</CheckBoxType>
+										<ContextMenu name="РазбиватьИсточникПоДнямКонтекстноеМеню" id="152"/>
+										<ExtendedTooltip name="РазбиватьИсточникПоДнямРасширеннаяПодсказка" id="153"/>
+										<Events>
+											<Event name="OnChange">РазбиватьИсточникПоДнямПриИзменении</Event>
+										</Events>
+									</CheckBoxField>
+					<CheckBoxField name="РежимОтладки" id="81">
+										<DataPath>РежимОтладки</DataPath>
+										<Title>
+											<v8:item>
+												<v8:lang>ru</v8:lang>
+												<v8:content>Режим отладки</v8:content>
+											</v8:item>
+										</Title>
+										<TitleLocation>Right</TitleLocation>
+										<ToolTip>
+											<v8:item>
+												<v8:lang>ru</v8:lang>
+												<v8:content>Дополнительная вкладка с техническими метриками (размеры, ветки кода, число записей). Для диагностики после склейки на копии каталога.</v8:content>
+											</v8:item>
+										</ToolTip>
+										<CheckBoxType>Auto</CheckBoxType>
+										<ContextMenu name="РежимОтладкиКонтекстноеМеню" id="82"/>
+										<ExtendedTooltip name="РежимОтладкиРасширеннаяПодсказка" id="83"/>
+										<Events>
+											<Event name="OnChange">РежимОтладкиПриИзменении</Event>
+										</Events>
+									</CheckBoxField>
+					<CheckBoxField name="ЗаписыватьПротоколВФайл" id="180">
+										<DataPath>ЗаписыватьПротоколВФайл</DataPath>
+										<Title>
+											<v8:item>
+												<v8:lang>ru</v8:lang>
+												<v8:content>Дублировать протокол в файл</v8:content>
+											</v8:item>
+										</Title>
+										<TitleLocation>Right</TitleLocation>
+										<ToolTip>
+											<v8:item>
+												<v8:lang>ru</v8:lang>
+												<v8:content>Пока идёт «Присоединить», форма 1С не отвечает — протокол на вкладке не обновляется. При включённой опции каждая строка сразу дописывается в .log (каталог приёмника или TEMP). Откройте файл в Блокноте и обновляйте F5.</v8:content>
+											</v8:item>
+										</ToolTip>
+										<CheckBoxType>Auto</CheckBoxType>
+										<ContextMenu name="ЗаписыватьПротоколВФайлКонтекстноеМеню" id="181"/>
+										<ExtendedTooltip name="ЗаписыватьПротоколВФайлРасширеннаяПодсказка" id="182"/>
+									</CheckBoxField>
 					</ChildItems>
 				</UsualGroup>
 			</ChildItems>
 		</UsualGroup>
-		<LabelDecoration name="ПодсказкаРежимаСервера" id="101">
-			<Visible>false</Visible>
-			<AutoMaxWidth>false</AutoMaxWidth>
-			<TextColor>style:SpecialTextColor</TextColor>
-			<Title formatted="false">
-				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Режим «На сервере 1С»</v8:content>
-				</v8:item>
-			</Title>
-			<ContextMenu name="ПодсказкаРежимаСервераКонтекстноеМеню" id="102"/>
-			<ExtendedTooltip name="ПодсказкаРежимаСервераРасширеннаяПодсказка" id="103"/>
-		</LabelDecoration>
-		<UsualGroup name="ГруппаНастройки" id="12">
+		<UsualGroup name="ГруппаДействия" id="20">
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
-					<v8:content>Настройки</v8:content>
+					<v8:content>Действия</v8:content>
 				</v8:item>
 			</Title>
-			<Group>AlwaysHorizontal</Group>
-			<Representation>None</Representation>
-			<ShowTitle>false</ShowTitle>
-			<ExtendedTooltip name="ГруппаНастройкиРасширеннаяПодсказка" id="13"/>
+			<Group>Vertical</Group>
+			<Representation>NormalSeparation</Representation>
+			<ShowTitle>true</ShowTitle>
+			<ExtendedTooltip name="ГруппаДействияРасширеннаяПодсказка" id="21"/>
 			<ChildItems>
-				<CheckBoxField name="ВыполнятьНаСервере" id="75">
-					<DataPath>ВыполнятьНаСервере</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>На сервере 1С</v8:content>
-						</v8:item>
-					</Title>
-					<TitleLocation>Right</TitleLocation>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Файлы ЖР читаются и пишутся на сервере приложений (например Linux). Укажите пути так, как их видит сервер.</v8:content>
-						</v8:item>
-					</ToolTip>
-					<CheckBoxType>Auto</CheckBoxType>
-					<ContextMenu name="ВыполнятьНаСервереКонтекстноеМеню" id="76"/>
-					<ExtendedTooltip name="ВыполнятьНаСервереРасширеннаяПодсказка" id="77"/>
-					<Events>
-						<Event name="OnChange">ВыполнятьНаСервереПриИзменении</Event>
-					</Events>
-				</CheckBoxField>
-				<CheckBoxField name="СоздаватьРезервнуюКопию" id="14">
-					<DataPath>СоздаватьРезервнуюКопию</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Резервная копия изменяемых файлов</v8:content>
-						</v8:item>
-					</Title>
-					<TitleLocation>Right</TitleLocation>
-					<CheckBoxType>Auto</CheckBoxType>
-					<ContextMenu name="СоздаватьРезервнуюКопиюКонтекстноеМеню" id="15"/>
-					<ExtendedTooltip name="СоздаватьРезервнуюКопиюРасширеннаяПодсказка" id="16"/>
-				</CheckBoxField>
-				<CheckBoxField name="ПроверятьЦелостность" id="72">
-					<DataPath>ПроверятьЦелостность</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Проверка целостности</v8:content>
-						</v8:item>
-					</Title>
-					<TitleLocation>Right</TitleLocation>
-					<CheckBoxType>Auto</CheckBoxType>
-					<ContextMenu name="ПроверятьЦелостностьКонтекстноеМеню" id="73"/>
-					<ExtendedTooltip name="ПроверятьЦелостностьРасширеннаяПодсказка" id="74"/>
-				</CheckBoxField>
-				<CheckBoxField name="ДедупликацияЗаписей" id="148">
-					<DataPath>ДедупликацияЗаписей</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Дедупликация записей</v8:content>
-						</v8:item>
-					</Title>
-					<TitleLocation>Right</TitleLocation>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>При объединении пропускать записи с тем же отпечатком (дата + ключевые поля), что уже есть в приёмнике. По умолчанию выключено.</v8:content>
-						</v8:item>
-					</ToolTip>
-					<CheckBoxType>Auto</CheckBoxType>
-					<ContextMenu name="ДедупликацияЗаписейКонтекстноеМеню" id="149"/>
-					<ExtendedTooltip name="ДедупликацияЗаписейРасширеннаяПодсказка" id="150"/>
-				</CheckBoxField>
-				<CheckBoxField name="РазбиватьИсточникПоДням" id="151">
-					<DataPath>РазбиватьИсточникПоДням</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Разбивать источник по дням</v8:content>
-						</v8:item>
-					</Title>
-					<TitleLocation>Right</TitleLocation>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Перед присоединением разложить записи источника по файлам YYYYMMDD000000.lgp. Незавершённые транзакции не режутся по границе суток.</v8:content>
-						</v8:item>
-					</ToolTip>
-					<CheckBoxType>Auto</CheckBoxType>
-					<ContextMenu name="РазбиватьИсточникПоДнямКонтекстноеМеню" id="152"/>
-					<ExtendedTooltip name="РазбиватьИсточникПоДнямРасширеннаяПодсказка" id="153"/>
-				</CheckBoxField>
-				<CheckBoxField name="РежимОтладки" id="81">
-					<DataPath>РежимОтладки</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Режим отладки</v8:content>
-						</v8:item>
-					</Title>
-					<TitleLocation>Right</TitleLocation>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Дополнительная вкладка с техническими метриками (размеры, ветки кода, число записей). Для диагностики после склейки на копии каталога.</v8:content>
-						</v8:item>
-					</ToolTip>
-					<CheckBoxType>Auto</CheckBoxType>
-					<ContextMenu name="РежимОтладкиКонтекстноеМеню" id="82"/>
-					<ExtendedTooltip name="РежимОтладкиРасширеннаяПодсказка" id="83"/>
-					<Events>
-						<Event name="OnChange">РежимОтладкиПриИзменении</Event>
-					</Events>
-				</CheckBoxField>
-				<InputField name="РежимКонфликта" id="17">
-					<DataPath>РежимКонфликта</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Если файл периода уже есть</v8:content>
-						</v8:item>
-					</Title>
-					<Width>20</Width>
-					<DropListButton>true</DropListButton>
-					<ChoiceButton>false</ChoiceButton>
-					<ListChoiceMode>true</ListChoiceMode>
-					<ContextMenu name="РежимКонфликтаКонтекстноеМеню" id="18"/>
-					<ExtendedTooltip name="РежимКонфликтаРасширеннаяПодсказка" id="19"/>
-					<Events>
-						<Event name="OnChange">РежимКонфликтаПриИзменении</Event>
-					</Events>
-				</InputField>
-			</ChildItems>
-		</UsualGroup>
-		<UsualGroup name="ГруппаКоманды" id="20">
-			<Title>
-				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Команды</v8:content>
-				</v8:item>
-			</Title>
-			<Group>AlwaysHorizontal</Group>
-			<Representation>None</Representation>
-			<ShowTitle>false</ShowTitle>
-			<ExtendedTooltip name="ГруппаКомандыРасширеннаяПодсказка" id="21"/>
-			<ChildItems>
-				<Button name="КнопкаАнализировать" id="22">
-					<Type>UsualButton</Type>
-					<DefaultButton>true</DefaultButton>
-					<CommandName>Form.Command.Анализировать</CommandName>
-					<ExtendedTooltip name="КнопкаАнализироватьРасширеннаяПодсказка" id="23"/>
-				</Button>
-				<Button name="КнопкаПрисоединить" id="24">
-					<Type>UsualButton</Type>
-					<CommandName>Form.Command.Присоединить</CommandName>
-					<ExtendedTooltip name="КнопкаПрисоединитьРасширеннаяПодсказка" id="25"/>
-				</Button>
-				<Button name="КнопкаВыбратьФайлы" id="26">
-					<Type>UsualButton</Type>
-					<CommandName>Form.Command.ВыбратьФайлы</CommandName>
-					<ExtendedTooltip name="КнопкаВыбратьФайлыРасширеннаяПодсказка" id="27"/>
-				</Button>
-				<Button name="КнопкаОтметитьВсе" id="28">
-					<Type>UsualButton</Type>
-					<CommandName>Form.Command.ОтметитьВсе</CommandName>
-					<ExtendedTooltip name="КнопкаОтметитьВсеРасширеннаяПодсказка" id="29"/>
-				</Button>
-				<Button name="КнопкаСнятьВсе" id="30">
-					<Type>UsualButton</Type>
-					<CommandName>Form.Command.СнятьВсе</CommandName>
-					<ExtendedTooltip name="КнопкаСнятьВсеРасширеннаяПодсказка" id="31"/>
-				</Button>
-				<Button name="КнопкаВосстановитьИзРезервнойКопии" id="144">
-					<Type>UsualButton</Type>
-					<CommandName>Form.Command.ВосстановитьИзРезервнойКопии</CommandName>
-					<ExtendedTooltip name="КнопкаВосстановитьИзРезервнойКопииРасширеннаяПодсказка" id="145"/>
-				</Button>
-				<Button name="КнопкаСохранитьПротокол" id="146">
-					<Type>UsualButton</Type>
-					<CommandName>Form.Command.СохранитьПротокол</CommandName>
-					<ExtendedTooltip name="КнопкаСохранитьПротоколРасширеннаяПодсказка" id="147"/>
-				</Button>
+				<LabelField name="ТекстШагаМастера" id="132">
+									<DataPath>ТекстШагаМастера</DataPath>
+									<TitleLocation>None</TitleLocation>
+									<AutoMaxWidth>false</AutoMaxWidth>
+									<ContextMenu name="ТекстШагаМастераКонтекстноеМеню" id="133"/>
+									<ExtendedTooltip name="ТекстШагаМастераРасширеннаяПодсказка" id="134"/>
+								</LabelField>
+				<LabelDecoration name="ПодсказкаМастера" id="135">
+									<AutoMaxWidth>false</AutoMaxWidth>
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>ru</v8:lang>
+											<v8:content>Шаг 1: укажите каталоги (копии, не живой srvinfo).</v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="ПодсказкаМастераКонтекстноеМеню" id="136"/>
+									<ExtendedTooltip name="ПодсказкаМастераРасширеннаяПодсказка" id="137"/>
+								</LabelDecoration>
+				<UsualGroup name="ГруппаКнопкиМастера" id="138">
+									<Group>AlwaysHorizontal</Group>
+									<Representation>None</Representation>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="ГруппаКнопкиМастераРасширеннаяПодсказка" id="139"/>
+									<ChildItems>
+										<Button name="КнопкаМастерНазад" id="140">
+											<Type>UsualButton</Type>
+											<CommandName>Form.Command.МастерНазад</CommandName>
+											<ExtendedTooltip name="КнопкаМастерНазадРасширеннаяПодсказка" id="141"/>
+										</Button>
+										<Button name="КнопкаМастерДалее" id="142">
+											<Type>UsualButton</Type>
+											<CommandName>Form.Command.МастерДалее</CommandName>
+											<ExtendedTooltip name="КнопкаМастерДалееРасширеннаяПодсказка" id="143"/>
+										</Button>
+									</ChildItems>
+								</UsualGroup>
+				<UsualGroup name="ГруппаКнопкиОпераций" id="166">
+					<Group>AlwaysHorizontal</Group>
+					<Representation>None</Representation>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="ГруппаКнопкиОперацийРасширеннаяПодсказка" id="167"/>
+					<ChildItems>
+					<Button name="КнопкаАнализировать" id="22">
+										<Type>UsualButton</Type>
+										<DefaultButton>true</DefaultButton>
+										<CommandName>Form.Command.Анализировать</CommandName>
+										<ExtendedTooltip name="КнопкаАнализироватьРасширеннаяПодсказка" id="23"/>
+									</Button>
+					<Button name="КнопкаПрисоединить" id="24">
+										<Type>UsualButton</Type>
+										<CommandName>Form.Command.Присоединить</CommandName>
+										<ExtendedTooltip name="КнопкаПрисоединитьРасширеннаяПодсказка" id="25"/>
+									</Button>
+					<Button name="КнопкаВыбратьФайлы" id="26">
+										<Type>UsualButton</Type>
+										<CommandName>Form.Command.ВыбратьФайлы</CommandName>
+										<ExtendedTooltip name="КнопкаВыбратьФайлыРасширеннаяПодсказка" id="27"/>
+									</Button>
+					<Button name="КнопкаОтметитьВсе" id="28">
+										<Type>UsualButton</Type>
+										<CommandName>Form.Command.ОтметитьВсе</CommandName>
+										<ExtendedTooltip name="КнопкаОтметитьВсеРасширеннаяПодсказка" id="29"/>
+									</Button>
+					<Button name="КнопкаСнятьВсе" id="30">
+										<Type>UsualButton</Type>
+										<CommandName>Form.Command.СнятьВсе</CommandName>
+										<ExtendedTooltip name="КнопкаСнятьВсеРасширеннаяПодсказка" id="31"/>
+									</Button>
+					<Button name="КнопкаВосстановитьИзРезервнойКопии" id="144">
+										<Type>UsualButton</Type>
+										<CommandName>Form.Command.ВосстановитьИзРезервнойКопии</CommandName>
+										<ExtendedTooltip name="КнопкаВосстановитьИзРезервнойКопииРасширеннаяПодсказка" id="145"/>
+									</Button>
+					<Button name="КнопкаСохранитьПротокол" id="146">
+										<Type>UsualButton</Type>
+										<CommandName>Form.Command.СохранитьПротокол</CommandName>
+										<ExtendedTooltip name="КнопкаСохранитьПротоколРасширеннаяПодсказка" id="147"/>
+									</Button>
+					</ChildItems>
+				</UsualGroup>
+				<LabelField name="ТекстПрогнозаВремени" id="168">
+					<DataPath>ТекстПрогнозаВремени</DataPath>
+					<TitleLocation>None</TitleLocation>
+					<AutoMaxWidth>false</AutoMaxWidth>
+					<Height>4</Height>
+					<VerticalStretch>false</VerticalStretch>
+					<ContextMenu name="ТекстПрогнозаВремениКонтекстноеМеню" id="169"/>
+					<ExtendedTooltip name="ТекстПрогнозаВремениРасширеннаяПодсказка" id="170"/>
+				</LabelField>
 			</ChildItems>
 		</UsualGroup>
 		<Table name="ФайлыЖурнала" id="32">
-			<Representation>List</Representation>
-			<ChangeRowSet>false</ChangeRowSet>
-			<ChangeRowOrder>false</ChangeRowOrder>
-			<HeightInTableRows>8</HeightInTableRows>
-			<AutoInsertNewRow>false</AutoInsertNewRow>
-			<EnableStartDrag>false</EnableStartDrag>
-			<EnableDrag>false</EnableDrag>
-			<DataPath>ФайлыЖурнала</DataPath>
-			<RowFilter xsi:nil="true"/>
-			<ContextMenu name="ФайлыЖурналаКонтекстноеМеню" id="33"/>
-			<AutoCommandBar name="ФайлыЖурналаКоманднаяПанель" id="34">
-				<Autofill>false</Autofill>
-			</AutoCommandBar>
-			<ExtendedTooltip name="ФайлыЖурналаРасширеннаяПодсказка" id="35"/>
-			<SearchStringAddition name="ФайлыЖурналаСтрокаПоиска" id="36">
-				<AdditionSource>
-					<Item>ФайлыЖурнала</Item>
-					<Type>SearchStringRepresentation</Type>
-				</AdditionSource>
-				<ContextMenu name="ФайлыЖурналаСтрокаПоискаКонтекстноеМеню" id="37"/>
-				<ExtendedTooltip name="ФайлыЖурналаСтрокаПоискаРасширеннаяПодсказка" id="38"/>
-			</SearchStringAddition>
-			<ViewStatusAddition name="ФайлыЖурналаСостояниеПросмотра" id="39">
-				<AdditionSource>
-					<Item>ФайлыЖурнала</Item>
-					<Type>ViewStatusRepresentation</Type>
-				</AdditionSource>
-				<ContextMenu name="ФайлыЖурналаСостояниеПросмотраКонтекстноеМеню" id="40"/>
-				<ExtendedTooltip name="ФайлыЖурналаСостояниеПросмотраРасширеннаяПодсказка" id="41"/>
-			</ViewStatusAddition>
-			<SearchControlAddition name="ФайлыЖурналаУправлениеПоиском" id="42">
-				<AdditionSource>
-					<Item>ФайлыЖурнала</Item>
-					<Type>SearchControl</Type>
-				</AdditionSource>
-				<ContextMenu name="ФайлыЖурналаУправлениеПоискомКонтекстноеМеню" id="43"/>
-				<ExtendedTooltip name="ФайлыЖурналаУправлениеПоискомРасширеннаяПодсказка" id="44"/>
-			</SearchControlAddition>
-			<ChildItems>
-				<CheckBoxField name="ФайлыЖурналаПометка" id="45">
-					<DataPath>ФайлыЖурнала.Пометка</DataPath>
-					<TitleLocation>None</TitleLocation>
-					<EditMode>EnterOnInput</EditMode>
-					<HeaderHorizontalAlign>Center</HeaderHorizontalAlign>
-					<CheckBoxType>Auto</CheckBoxType>
-					<ContextMenu name="ФайлыЖурналаПометкаКонтекстноеМеню" id="46"/>
-					<ExtendedTooltip name="ФайлыЖурналаПометкаРасширеннаяПодсказка" id="47"/>
-				</CheckBoxField>
-				<InputField name="ФайлыЖурналаИмяФайла" id="48">
-					<DataPath>ФайлыЖурнала.ИмяФайла</DataPath>
-					<ReadOnly>true</ReadOnly>
-					<EditMode>EnterOnInput</EditMode>
-					<ContextMenu name="ФайлыЖурналаИмяФайлаКонтекстноеМеню" id="49"/>
-					<ExtendedTooltip name="ФайлыЖурналаИмяФайлаРасширеннаяПодсказка" id="50"/>
-				</InputField>
-				<InputField name="ФайлыЖурналаДействие" id="51">
-					<DataPath>ФайлыЖурнала.Действие</DataPath>
-					<ReadOnly>true</ReadOnly>
-					<EditMode>EnterOnInput</EditMode>
-					<ContextMenu name="ФайлыЖурналаДействиеКонтекстноеМеню" id="52"/>
-					<ExtendedTooltip name="ФайлыЖурналаДействиеРасширеннаяПодсказка" id="53"/>
-				</InputField>
-				<InputField name="ФайлыЖурналаРазмерИсточника" id="54">
-					<DataPath>ФайлыЖурнала.РазмерИсточника</DataPath>
-					<ReadOnly>true</ReadOnly>
-					<EditMode>EnterOnInput</EditMode>
-					<ContextMenu name="ФайлыЖурналаРазмерИсточникаКонтекстноеМеню" id="55"/>
-					<ExtendedTooltip name="ФайлыЖурналаРазмерИсточникаРасширеннаяПодсказка" id="56"/>
-				</InputField>
-				<InputField name="ФайлыЖурналаРазмерПриемника" id="57">
-					<DataPath>ФайлыЖурнала.РазмерПриемника</DataPath>
-					<ReadOnly>true</ReadOnly>
-					<EditMode>EnterOnInput</EditMode>
-					<ContextMenu name="ФайлыЖурналаРазмерПриемникаКонтекстноеМеню" id="58"/>
-					<ExtendedTooltip name="ФайлыЖурналаРазмерПриемникаРасширеннаяПодсказка" id="59"/>
-				</InputField>
-			</ChildItems>
-		</Table>
+					<Representation>List</Representation>
+					<ChangeRowSet>false</ChangeRowSet>
+					<ChangeRowOrder>false</ChangeRowOrder>
+					<HeightInTableRows>8</HeightInTableRows>
+					<AutoInsertNewRow>false</AutoInsertNewRow>
+					<EnableStartDrag>false</EnableStartDrag>
+					<EnableDrag>false</EnableDrag>
+					<DataPath>ФайлыЖурнала</DataPath>
+					<RowFilter xsi:nil="true"/>
+					<ContextMenu name="ФайлыЖурналаКонтекстноеМеню" id="33"/>
+					<AutoCommandBar name="ФайлыЖурналаКоманднаяПанель" id="34">
+						<Autofill>false</Autofill>
+					</AutoCommandBar>
+					<ExtendedTooltip name="ФайлыЖурналаРасширеннаяПодсказка" id="35"/>
+					<SearchStringAddition name="ФайлыЖурналаСтрокаПоиска" id="36">
+						<AdditionSource>
+							<Item>ФайлыЖурнала</Item>
+							<Type>SearchStringRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="ФайлыЖурналаСтрокаПоискаКонтекстноеМеню" id="37"/>
+						<ExtendedTooltip name="ФайлыЖурналаСтрокаПоискаРасширеннаяПодсказка" id="38"/>
+					</SearchStringAddition>
+					<ViewStatusAddition name="ФайлыЖурналаСостояниеПросмотра" id="39">
+						<AdditionSource>
+							<Item>ФайлыЖурнала</Item>
+							<Type>ViewStatusRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="ФайлыЖурналаСостояниеПросмотраКонтекстноеМеню" id="40"/>
+						<ExtendedTooltip name="ФайлыЖурналаСостояниеПросмотраРасширеннаяПодсказка" id="41"/>
+					</ViewStatusAddition>
+					<SearchControlAddition name="ФайлыЖурналаУправлениеПоиском" id="42">
+						<AdditionSource>
+							<Item>ФайлыЖурнала</Item>
+							<Type>SearchControl</Type>
+						</AdditionSource>
+						<ContextMenu name="ФайлыЖурналаУправлениеПоискомКонтекстноеМеню" id="43"/>
+						<ExtendedTooltip name="ФайлыЖурналаУправлениеПоискомРасширеннаяПодсказка" id="44"/>
+					</SearchControlAddition>
+					<ChildItems>
+						<CheckBoxField name="ФайлыЖурналаПометка" id="45">
+							<DataPath>ФайлыЖурнала.Пометка</DataPath>
+							<TitleLocation>None</TitleLocation>
+							<EditMode>EnterOnInput</EditMode>
+							<HeaderHorizontalAlign>Center</HeaderHorizontalAlign>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="ФайлыЖурналаПометкаКонтекстноеМеню" id="46"/>
+							<ExtendedTooltip name="ФайлыЖурналаПометкаРасширеннаяПодсказка" id="47"/>
+							<Events>
+								<Event name="OnChange">ФайлыЖурналаПометкаПриИзменении</Event>
+							</Events>
+						</CheckBoxField>
+						<InputField name="ФайлыЖурналаИмяФайла" id="48">
+							<DataPath>ФайлыЖурнала.ИмяФайла</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="ФайлыЖурналаИмяФайлаКонтекстноеМеню" id="49"/>
+							<ExtendedTooltip name="ФайлыЖурналаИмяФайлаРасширеннаяПодсказка" id="50"/>
+						</InputField>
+						<InputField name="ФайлыЖурналаДействие" id="51">
+							<DataPath>ФайлыЖурнала.Действие</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="ФайлыЖурналаДействиеКонтекстноеМеню" id="52"/>
+							<ExtendedTooltip name="ФайлыЖурналаДействиеРасширеннаяПодсказка" id="53"/>
+						</InputField>
+						<InputField name="ФайлыЖурналаРазмерИсточника" id="54">
+							<DataPath>ФайлыЖурнала.РазмерИсточника</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="ФайлыЖурналаРазмерИсточникаКонтекстноеМеню" id="55"/>
+							<ExtendedTooltip name="ФайлыЖурналаРазмерИсточникаРасширеннаяПодсказка" id="56"/>
+						</InputField>
+						<InputField name="ФайлыЖурналаРазмерПриемника" id="57">
+							<DataPath>ФайлыЖурнала.РазмерПриемника</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="ФайлыЖурналаРазмерПриемникаКонтекстноеМеню" id="58"/>
+							<ExtendedTooltip name="ФайлыЖурналаРазмерПриемникаРасширеннаяПодсказка" id="59"/>
+						</InputField>
+					</ChildItems>
+				</Table>
 		<Pages name="СтраницыПротокола" id="84">
-			<Title>
-				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Протокол</v8:content>
-				</v8:item>
-			</Title>
-			<PagesRepresentation>TabsOnTop</PagesRepresentation>
-			<ExtendedTooltip name="СтраницыПротоколаРасширеннаяПодсказка" id="85"/>
-			<ChildItems>
-				<Page name="СтраницаПротокол" id="86">
 					<Title>
 						<v8:item>
 							<v8:lang>ru</v8:lang>
 							<v8:content>Протокол</v8:content>
 						</v8:item>
 					</Title>
-					<ExtendedTooltip name="СтраницаПротоколРасширеннаяПодсказка" id="87"/>
+					<PagesRepresentation>TabsOnTop</PagesRepresentation>
+					<ExtendedTooltip name="СтраницыПротоколаРасширеннаяПодсказка" id="85"/>
 					<ChildItems>
-						<InputField name="ТекстПротокола" id="60">
-							<DataPath>ТекстПротокола</DataPath>
-							<ReadOnly>true</ReadOnly>
-							<AutoMaxWidth>false</AutoMaxWidth>
-							<Height>6</Height>
-							<MultiLine>true</MultiLine>
-							<ContextMenu name="ТекстПротоколаКонтекстноеМеню" id="61"/>
-							<ExtendedTooltip name="ТекстПротоколаРасширеннаяПодсказка" id="62"/>
-						</InputField>
+						<Page name="СтраницаПротокол" id="86">
+											<Title>
+												<v8:item>
+													<v8:lang>ru</v8:lang>
+													<v8:content>Протокол</v8:content>
+												</v8:item>
+											</Title>
+											<ExtendedTooltip name="СтраницаПротоколРасширеннаяПодсказка" id="87"/>
+											<ChildItems>
+												<InputField name="ПутьФайлаПротокола" id="183">
+													<DataPath>ПутьФайлаПротокола</DataPath>
+													<ReadOnly>true</ReadOnly>
+													<AutoMaxWidth>false</AutoMaxWidth>
+													<ContextMenu name="ПутьФайлаПротоколаКонтекстноеМеню" id="184"/>
+													<ExtendedTooltip name="ПутьФайлаПротоколаРасширеннаяПодсказка" id="185"/>
+												</InputField>
+												<InputField name="ТекстПротокола" id="60">
+													<DataPath>ТекстПротокола</DataPath>
+													<ReadOnly>true</ReadOnly>
+													<AutoMaxWidth>false</AutoMaxWidth>
+													<Height>6</Height>
+													<MultiLine>true</MultiLine>
+													<ContextMenu name="ТекстПротоколаКонтекстноеМеню" id="61"/>
+													<ExtendedTooltip name="ТекстПротоколаРасширеннаяПодсказка" id="62"/>
+												</InputField>
+											</ChildItems>
+										</Page>
+						<Page name="СтраницаОтладка" id="88">
+											<Title>
+												<v8:item>
+													<v8:lang>ru</v8:lang>
+													<v8:content>Отладка</v8:content>
+												</v8:item>
+											</Title>
+											<ExtendedTooltip name="СтраницаОтладкаРасширеннаяПодсказка" id="89"/>
+											<ChildItems>
+												<InputField name="ТекстОтладочногоЛога" id="90">
+													<DataPath>ТекстОтладочногоЛога</DataPath>
+													<ReadOnly>true</ReadOnly>
+													<AutoMaxWidth>false</AutoMaxWidth>
+													<Height>6</Height>
+													<MultiLine>true</MultiLine>
+													<ContextMenu name="ТекстОтладочногоЛогаКонтекстноеМеню" id="91"/>
+													<ExtendedTooltip name="ТекстОтладочногоЛогаРасширеннаяПодсказка" id="92"/>
+												</InputField>
+											</ChildItems>
+										</Page>
+						<Page name="СтраницаСправка" id="159">
+											<Title>
+												<v8:item>
+													<v8:lang>ru</v8:lang>
+													<v8:content>Справка</v8:content>
+												</v8:item>
+											</Title>
+											<ExtendedTooltip name="СтраницаСправкаРасширеннаяПодсказка" id="160"/>
+											<ChildItems>
+												<InputField name="ТекстСправки" id="161">
+													<DataPath>ТекстСправки</DataPath>
+													<ReadOnly>true</ReadOnly>
+													<TitleLocation>None</TitleLocation>
+													<AutoMaxWidth>false</AutoMaxWidth>
+													<Height>10</Height>
+													<MultiLine>true</MultiLine>
+													<ContextMenu name="ТекстСправкиКонтекстноеМеню" id="162"/>
+													<ExtendedTooltip name="ТекстСправкиРасширеннаяПодсказка" id="163"/>
+												</InputField>
+											</ChildItems>
+										</Page>
 					</ChildItems>
-				</Page>
-				<Page name="СтраницаОтладка" id="88">
-					<Title>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Отладка</v8:content>
-						</v8:item>
-					</Title>
-					<ExtendedTooltip name="СтраницаОтладкаРасширеннаяПодсказка" id="89"/>
-					<ChildItems>
-						<InputField name="ТекстОтладочногоЛога" id="90">
-							<DataPath>ТекстОтладочногоЛога</DataPath>
-							<ReadOnly>true</ReadOnly>
-							<AutoMaxWidth>false</AutoMaxWidth>
-							<Height>6</Height>
-							<MultiLine>true</MultiLine>
-							<ContextMenu name="ТекстОтладочногоЛогаКонтекстноеМеню" id="91"/>
-							<ExtendedTooltip name="ТекстОтладочногоЛогаРасширеннаяПодсказка" id="92"/>
-						</InputField>
-					</ChildItems>
-				</Page>
-			</ChildItems>
-		</Pages>
+				</Pages>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="Объект" id="1">
@@ -557,7 +704,7 @@
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
-					<v8:content>Старый ЖР (кластер 1)</v8:content>
+					<v8:content>Старый ЖР</v8:content>
 				</v8:item>
 			</Title>
 			<Type>
@@ -576,7 +723,7 @@
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
-					<v8:content>Текущий ЖР (кластер 2)</v8:content>
+					<v8:content>Текущий ЖР</v8:content>
 				</v8:item>
 			</Title>
 			<Type>
@@ -595,7 +742,7 @@
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
-					<v8:content>На сервере 1С</v8:content>
+					<v8:content>Выполнять на сервере</v8:content>
 				</v8:item>
 			</Title>
 			<Type>
@@ -605,6 +752,21 @@
 			<Save>
 				<Field>ВыполнятьНаСервере</Field>
 			</Save>
+		</Attribute>
+		<Attribute name="РежимВыполнения" id="125">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Режим выполнения</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>20</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
 		</Attribute>
 		<Attribute name="СоздаватьРезервнуюКопию" id="4">
 			<Title>
@@ -619,6 +781,25 @@
 			<SavedData>true</SavedData>
 			<Save>
 				<Field>СоздаватьРезервнуюКопию</Field>
+			</Save>
+		</Attribute>
+		<Attribute name="КаталогРезервнойКопии" id="123">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Каталог резервной копии</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+			<SavedData>true</SavedData>
+			<Save>
+				<Field>КаталогРезервнойКопии</Field>
 			</Save>
 		</Attribute>
 		<Attribute name="ПроверятьЦелостность" id="9">
@@ -728,6 +909,21 @@
 				<v8:item>
 					<v8:lang>ru</v8:lang>
 					<v8:content>Отладочный лог</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="ТекстСправки" id="124">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Справка</v8:content>
 				</v8:item>
 			</Title>
 			<Type>
@@ -960,7 +1156,155 @@
 						</v8:StringQualifiers>
 					</Type>
 				</Column>
+				<Column name="РазмерИсточникаБайт" id="8">
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Размер источника (байт)</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:decimal</v8:Type>
+						<v8:NumberQualifiers>
+							<v8:Digits>18</v8:Digits>
+							<v8:FractionDigits>0</v8:FractionDigits>
+							<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+						</v8:NumberQualifiers>
+					</Type>
+				</Column>
 			</Columns>
+		</Attribute>
+		<Attribute name="ТекстПрогнозаВремени" id="126">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Прогноз времени</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="ПутьЛогаУскоренияPython" id="171">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Путь лога ускорения Python</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="ПутьСпискаФайловУскорения" id="172">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Путь списка файлов ускорения</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="ОжиданиеУскоренияPython" id="173">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Ожидание ускорения Python</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="КомандаPythonУскорения" id="174">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Команда Python</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="ПутьСкриптаУскоренияPython" id="175">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Путь скрипта ускорения</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="ПозицияЧтенияЛогаУскорения" id="176">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Позиция чтения лога ускорения</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>10</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="ЗаписыватьПротоколВФайл" id="177">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Дублировать протокол в файл</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+			<SavedData>true</SavedData>
+			<Save>
+				<Field>ЗаписыватьПротоколВФайл</Field>
+			</Save>
+		</Attribute>
+		<Attribute name="ПутьФайлаПротокола" id="178">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Файл протокола</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
 		</Attribute>
 	</Attributes>
 	<Commands>
@@ -974,7 +1318,7 @@
 			<ToolTip>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
-					<v8:content>План без записи: словари, объёмы, целостность, блокировки</v8:content>
+					<v8:content>План без записи: словари, объёмы, лёгкая проверка заголовков (блокировки — только при «Присоединить»)</v8:content>
 				</v8:item>
 			</ToolTip>
 			<Action>Анализировать</Action>
@@ -1067,7 +1411,7 @@
 			<ToolTip>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
-					<v8:content>Найти каталоги *.bak_… рядом с приёмником и вернуть в него lgf/lgp</v8:content>
+					<v8:content>Найти каталоги *.bak_… в каталоге резервной копии (или рядом с приёмником, если путь не задан) и вернуть lgf/lgp</v8:content>
 				</v8:item>
 			</ToolTip>
 			<Action>ВосстановитьИзРезервнойКопии</Action>

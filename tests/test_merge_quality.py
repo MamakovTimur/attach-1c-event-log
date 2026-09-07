@@ -1,4 +1,8 @@
-"""Golden / synthetic tests for Phase 2 merge quality (dedup, tx, day-split, archive)."""
+"""Golden / synthetic tests for Phase 2 merge quality (dedup, tx, day-split, archive).
+
+Fixtures under tests/fixtures/golden/ are committed immutable bytes.
+Do not regenerate them in setUp — use write_golden_fixtures only as maintenance.
+"""
 
 from __future__ import annotations
 
@@ -20,30 +24,34 @@ from lgp_merge_quality import (  # noqa: E402
     scan_transaction_boundary,
     split_by_day,
     split_header_body,
-    write_golden_fixtures,
 )
 
 FIXTURES = ROOT / "tests" / "fixtures" / "golden"
+GOLDEN_NAMES = (
+    "day_a.lgp",
+    "day_b_overlap.lgp",
+    "multiday.lgp",
+    "open_tx_tail.lgp",
+    "archive_packed.lgp",
+    "emptyish.lgp",
+    "renumber_src.lgp",
+    "renumber_dst.lgp",
+)
 
 
 class TestMergeQuality(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        write_golden_fixtures(ROOT)
-
     def test_fixtures_exist(self) -> None:
-        names = [
-            "day_a.lgp",
-            "day_b_overlap.lgp",
-            "multiday.lgp",
-            "open_tx_tail.lgp",
-            "archive_packed.lgp",
-            "emptyish.lgp",
-            "renumber_src.lgp",
-            "renumber_dst.lgp",
-        ]
-        for name in names:
+        for name in GOLDEN_NAMES:
             self.assertTrue((FIXTURES / name).is_file(), name)
+
+    def test_fixtures_have_no_crcrlf(self) -> None:
+        for name in GOLDEN_NAMES:
+            data = (FIXTURES / name).read_bytes()
+            self.assertNotIn(
+                b"\r\r\n",
+                data,
+                f"{name}: CRCRLF means text-mode newline translation; rewrite via write_bytes",
+            )
 
     def test_dedup_skips_overlapping_fingerprint(self) -> None:
         a = (FIXTURES / "day_a.lgp").read_text(encoding="utf-8-sig")

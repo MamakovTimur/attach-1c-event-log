@@ -8,6 +8,8 @@
 !tests/fixtures/**/*.lgp
 !tests/fixtures/**/*.lgf
 *.tmp
+*.py[cod]
+__pycache__/
 .DS_Store
 Thumbs.db
 .ai/
@@ -17,8 +19,10 @@ Thumbs.db
 !.ai/verification-фаза1.md
 !.ai/verification-фаза2.md
 _tmp_ib/
+_syntax_chunks/
 designer_*.log
 enterprise_*.log
+smoke_open_epf*.log
 rebuild_epf.bat
 test_*.bat
 test_*.ps1
