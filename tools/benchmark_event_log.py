@@ -28,6 +28,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 ENGINE = ROOT / "tools" / "attach_event_log.py"
 MIB = 1024 * 1024
+FREE_SPACE_MARGIN = 64 * MIB
 SOURCE_GUID = "aaaaaaaa-e311-4ee2-8582-7a2a46a59363"
 DESTINATION_GUID = "bbbbbbbb-e311-4ee2-8582-7a2a46a59363"
 PERIOD_NAME = "20260101000000.lgp"
@@ -220,6 +221,25 @@ def parse_sizes(value: str) -> list[float]:
     return sizes
 
 
+def estimate_benchmark_disk_bytes(
+    sizes: list[float],
+    scenarios: list[str],
+    modes: list[str],
+    repeat: int,
+) -> int:
+    """Estimate retained input/output data for all generated benchmark cases."""
+    total = 0
+    writes_output = "attach" in modes
+    for size in sizes:
+        source_bytes = max(1, int(size * MIB))
+        for scenario in scenarios:
+            multiplier = 1
+            if writes_output:
+                multiplier += 2 if scenario == "remap" else 1
+            total += source_bytes * multiplier * repeat
+    return total + FREE_SPACE_MARGIN
+
+
 def benchmark(
     sizes: list[float],
     scenarios: list[str],
@@ -232,6 +252,15 @@ def benchmark(
     parent.mkdir(parents=True, exist_ok=True)
     remove_parent = work_dir is None
     try:
+        required = estimate_benchmark_disk_bytes(
+            sizes, scenarios, modes, repeat
+        )
+        free = shutil.disk_usage(parent).free
+        if free < required:
+            raise RuntimeError(
+                "not enough free space for benchmark: "
+                f"{free / MIB:.1f} MiB available, {required / MIB:.1f} MiB required"
+            )
         for size in sizes:
             for scenario in scenarios:
                 for iteration in range(1, repeat + 1):

@@ -27,6 +27,8 @@ from typing import BinaryIO, Iterable, Iterator, TextIO
 EXIT_OK = 0
 EXIT_VALIDATION = 1
 EXIT_BUSY = 2
+MIB = 1024 * 1024
+FREE_SPACE_MARGIN = 64 * MIB
 
 HEADER_MARKER = "1CV8LOG"
 UUID_TYPES = frozenset({1, 5})
@@ -914,6 +916,46 @@ def parse_files_list(
     return out
 
 
+def estimate_lgp_temp_bytes(
+    source_bytes: int,
+    destination_bytes: int,
+    action: str,
+    need_remap: bool,
+) -> int:
+    """Conservative peak size of the temporary file published beside LGP."""
+    transformed_source = source_bytes * 2 if need_remap else source_bytes
+    if action == "merge":
+        transformed_source += destination_bytes
+    return transformed_source + MIB
+
+
+def required_free_space_bytes(
+    plan: list[tuple[str, Path, Path, str]],
+    need_remap: bool,
+    lgf_destination_bytes: int,
+    added_lgf_bytes: int,
+) -> int:
+    """Return free bytes needed before the first destination mutation."""
+    largest_temp = lgf_destination_bytes + added_lgf_bytes + MIB
+    committed_growth = added_lgf_bytes
+    for _, source, destination, action in plan:
+        destination_bytes = destination.stat().st_size if destination.exists() else 0
+        source_bytes = source.stat().st_size
+        transformed_source = source_bytes * 2 if need_remap else source_bytes
+        final_bytes = transformed_source
+        if action == "merge":
+            final_bytes += destination_bytes
+        temp_bytes = estimate_lgp_temp_bytes(
+            source_bytes,
+            destination_bytes,
+            action,
+            need_remap,
+        )
+        largest_temp = max(largest_temp, committed_growth + temp_bytes)
+        committed_growth += max(0, final_bytes - destination_bytes)
+    return largest_temp + FREE_SPACE_MARGIN
+
+
 def attach_cmd(
     src_dir: Path,
     dst_dir: Path,
@@ -975,6 +1017,55 @@ def attach_cmd(
     log(f"Need remap: {need_remap}")
     log(f"New dictionary rows: {len(maps_info['added_rows'])}")
 
+    plan: list[tuple[str, Path, Path, str]] = []
+    for name, per_file in file_items:
+        src_path = src_dir / name
+        dst_path = dst_dir / name
+        if not src_path.exists():
+            log(f"Пропуск (нет в источнике): {name}")
+            continue
+        exists = dst_path.exists()
+        action = per_file or conflict or "merge"
+        if not exists:
+            action = "copy"
+        elif action == "skip":
+            log(f"Пропущен (уже есть): {name}")
+            continue
+        if action not in ("copy", "replace", "merge"):
+            log(f"Неизвестный режим конфликта: {action}")
+            return EXIT_VALIDATION
+        if file_locked(dst_path):
+            log(f"Файл приёмника занят: {name}")
+            return EXIT_BUSY
+        plan.append((name, src_path, dst_path, action))
+
+    if not plan:
+        log("Нет файлов .lgp, требующих присоединения.")
+        return EXIT_VALIDATION
+
+    added_lgf_bytes = sum(
+        len((row + dst["newline"]).encode("utf-8"))
+        for row in maps_info["added_rows"]
+    )
+    try:
+        required_bytes = required_free_space_bytes(
+            plan,
+            need_remap,
+            lgf_dst.stat().st_size,
+            added_lgf_bytes,
+        )
+        free_bytes = shutil.disk_usage(dst_dir).free
+    except OSError as e:
+        log(f"Не удалось определить свободное место: {e}")
+        return EXIT_BUSY
+    log(
+        f"Свободное место: {free_bytes / MIB:.1f} МиБ; "
+        f"требуется не менее {required_bytes / MIB:.1f} МиБ."
+    )
+    if free_bytes < required_bytes:
+        log("Недостаточно свободного места для безопасной временной записи.")
+        return EXIT_BUSY
+
     try:
         append_rows_to_lgf(lgf_dst, maps_info["added_rows"], dst["newline"])
     except OSError as e:
@@ -987,24 +1078,10 @@ def attach_cmd(
         log("Словарь приёмника уже содержит все объекты источника.")
 
     processed = 0
-    for name, per_file in file_items:
-        src_path = src_dir / name
-        dst_path = dst_dir / name
-        if not src_path.exists():
-            log(f"Пропуск (нет в источнике): {name}")
-            continue
+    for name, src_path, dst_path, action in plan:
         if file_locked(dst_path):
             log(f"Файл приёмника занят: {name}")
             return EXIT_BUSY
-
-        exists = dst_path.exists()
-        action = per_file or conflict or "merge"
-
-        if not exists:
-            action = "copy"
-        elif action == "skip":
-            log(f"Пропущен (уже есть): {name}")
-            continue
 
         log(f"Обработка {name} ({action}, remap={need_remap})…")
         try:

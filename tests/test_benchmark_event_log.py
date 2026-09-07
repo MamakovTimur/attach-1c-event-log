@@ -3,6 +3,7 @@ from __future__ import annotations
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from tools import benchmark_event_log as bench
 
@@ -46,6 +47,29 @@ class BenchmarkEventLogTests(unittest.TestCase):
     def test_parse_sizes_rejects_non_positive_values(self) -> None:
         with self.assertRaises(Exception):
             bench.parse_sizes("100,0")
+
+    def test_disk_estimate_accounts_for_retained_remap_output(self) -> None:
+        estimated = bench.estimate_benchmark_disk_bytes(
+            sizes=[100],
+            scenarios=["no-remap", "remap"],
+            modes=["attach"],
+            repeat=1,
+        )
+        self.assertEqual(estimated, (2 * 100 + 3 * 100) * bench.MIB + bench.FREE_SPACE_MARGIN)
+
+    def test_benchmark_rejects_insufficient_space_before_generation(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            usage = type("Usage", (), {"free": 1})()
+            with mock.patch.object(bench.shutil, "disk_usage", return_value=usage):
+                with self.assertRaisesRegex(RuntimeError, "not enough free space"):
+                    bench.benchmark(
+                        sizes=[1],
+                        scenarios=["remap"],
+                        modes=["attach"],
+                        repeat=1,
+                        work_dir=Path(tmp),
+                    )
+            self.assertEqual(list(Path(tmp).iterdir()), [])
 
 
 if __name__ == "__main__":
