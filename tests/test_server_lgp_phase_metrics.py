@@ -57,6 +57,19 @@ def test_atomic_publication_owns_publish_timer() -> None:
     assert 'ЗавершитьИзмерениеФазыLgp(МетрикиФаз, "ПубликацияМс"' in body
 
 
+def test_size_only_metrics_do_not_require_record_counts() -> None:
+    text = _module_text()
+    formatter = _method_body(text, "СтрокаМетрикLgp")
+    fallback = formatter.split('Если Не Метрики.Свойство("Записей") Тогда', 1)[1].split("КонецЕсли;", 1)[0]
+    assert "Возврат" in fallback
+    assert "Метрики.Байт" in fallback
+    assert "Метрики.Записей" not in fallback
+    operation = _method_body(text, "СтрокиОтладкиОперацииФайла")
+    comparison = operation.split("И МетрикиПосле.Записей <", 1)[0].rsplit("Если", 1)[1]
+    assert 'МетрикиИсточника.Свойство("Записей")' in comparison
+    assert 'МетрикиПосле.Свойство("Записей")' in comparison
+
+
 def test_split_by_day_aggregates_child_phases_without_child_total() -> None:
     body = _method_body(_module_text(), "ДобавитьВложенныеМетрикиФазLgp")
     assert "ВложенныеФазы.ЧтениеПодготовкаМс" in body
@@ -69,4 +82,5 @@ if __name__ == "__main__":
     test_phase_metrics_are_allocated_only_on_server_for_debug()
     test_debug_log_exposes_all_lgp_phase_metrics()
     test_atomic_publication_owns_publish_timer()
+    test_size_only_metrics_do_not_require_record_counts()
     test_split_by_day_aggregates_child_phases_without_child_total()
